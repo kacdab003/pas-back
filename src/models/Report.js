@@ -17,11 +17,15 @@ const reportSchema = new mongoose.Schema(
     mod_set: { type: Number, required: true },
     module: { type: String, required: true },
     rms: { type: String, enum: ["ZAŁ", "WYŁ"] },
-    objects: {},
+    objects: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Object",
+      required: true,
+    },
     pump: {
       type: String,
       enum: ["P1", "P2"],
-      required,
+      required: true,
     },
     pressure: { type: Number, required: true },
     temperatureIn: { type: Number, required: true },
