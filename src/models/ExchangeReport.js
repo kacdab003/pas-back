@@ -1,6 +1,6 @@
-const moongose = require("mongoose");
+const mongoose = require("mongoose");
 
-const ExchangeReport = new moongose.Schema({
+const exchangeReportSchema = new mongoose.Schema({
   exchangeDate: {
     type: Date,
     required: true,

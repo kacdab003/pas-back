@@ -1,6 +1,6 @@
-const moongose = require("mongoose");
+const mongoose = require("mongoose");
 
-const Object = new moongose.Schema({
+const objectSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
