@@ -38,7 +38,7 @@ router.get("/modules/:id", async (req, res) => {
 
 router.patch("/modules/:id", async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["moduleNumber", "type", "state"];
+  const allowedUpdates = ["moduleNumber", "moduleType", "state"];
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)
   );

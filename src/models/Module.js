@@ -6,10 +6,12 @@ const moduleSchema = new mongoose.Schema({
     required: true,
   },
   type: {
+    type: String,
     enum: ["A", "B"],
     required: true,
   },
   state: {
+    type: String,
     enum: ["a", "b", "c"],
     required: true,
   },
