@@ -1,6 +1,6 @@
-const moongose = require("mongoose");
+const mongoose = require("mongoose");
 
-const Module = new moongose.Schema({
+const moduleSchema = new mongoose.Schema({
   moduleNumber: {
     type: Number,
     required: true,

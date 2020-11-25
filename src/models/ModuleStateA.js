@@ -1,6 +1,6 @@
-const moongose = require("mongoose");
+const mongoose = require("mongoose");
 
-const ModuleStateA = new moongose.Schema({
+const moduleStateASchema = new mongoose.Schema({
   moduleNumber: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Module",
