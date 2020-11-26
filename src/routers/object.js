@@ -9,7 +9,7 @@ router.post("/objects", async (req, res) => {
     await object.save();
     res.status(201).send(object);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ error: "Could not add requsted resource" });
   }
 });
 
@@ -18,7 +18,7 @@ router.get("/objects", async (req, res) => {
     const objects = await Object.find({});
     res.send(objects);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not find requsted resource" });
   }
 });
 
@@ -27,12 +27,14 @@ router.get("/objects/:id", async (req, res) => {
     const object = await Object.findById(req.params.id);
 
     if (!object) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
     res.send(object);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not find requsted resource" });
   }
 });
 
@@ -54,12 +56,14 @@ router.patch("/objects/:id", async (req, res) => {
     });
 
     if (!object) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
     res.send(object);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ error: "Could not update requsted resource" });
   }
 });
 
@@ -68,12 +72,17 @@ router.delete("/objects/:id", async (req, res) => {
     const object = await Object.findByIdAndDelete(req.params.id);
 
     if (!object) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
-    res.send(object);
+    res.send({
+      message: "Resource was deleted successfully",
+      deletedObject: object,
+    });
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not delete requsted resource" });
   }
 });
 

@@ -9,7 +9,7 @@ router.post("/moduleStateAs", async (req, res) => {
     await moduleStateA.save();
     res.status(201).send(moduleStateA);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ error: "Could not add requsted resource" });
   }
 });
 
@@ -18,7 +18,7 @@ router.get("/moduleStateAs", async (req, res) => {
     const moduleStateAs = await ModuleStateA.find({});
     res.send(moduleStateAs);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not find requsted resource" });
   }
 });
 
@@ -27,12 +27,14 @@ router.get("/moduleStateAs/:id", async (req, res) => {
     const moduleStateA = await ModuleStateA.findById(req.params.id);
 
     if (!moduleStateA) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
     res.send(moduleStateA);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not find requsted resource" });
   }
 });
 
@@ -58,12 +60,14 @@ router.patch("/moduleStateAs/:id", async (req, res) => {
     );
 
     if (!moduleStateA) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
     res.send(moduleStateA);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ error: "Could not update requsted resource" });
   }
 });
 
@@ -72,12 +76,17 @@ router.delete("/moduleStateAs/:id", async (req, res) => {
     const moduleStateA = await ModuleStateA.findByIdAndDelete(req.params.id);
 
     if (!moduleStateA) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
-    res.send(moduleStateA);
+    res.send({
+      message: "Resource was deleted successfully",
+      deletedModuleStateA: moduleStateA,
+    });
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not delete requsted resource" });
   }
 });
 

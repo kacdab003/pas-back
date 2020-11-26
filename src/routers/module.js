@@ -9,7 +9,7 @@ router.post("/modules", async (req, res) => {
     await module.save();
     res.status(201).send(module);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ error: "Could not add requsted resource" });
   }
 });
 
@@ -18,7 +18,7 @@ router.get("/modules", async (req, res) => {
     const modules = await Module.find({});
     res.send(modules);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not find requsted resource" });
   }
 });
 
@@ -27,12 +27,14 @@ router.get("/modules/:id", async (req, res) => {
     const module = await Module.findById(req.params.id);
 
     if (!module) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
     res.send(module);
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not find requsted resource" });
   }
 });
 
@@ -54,12 +56,14 @@ router.patch("/modules/:id", async (req, res) => {
     });
 
     if (!module) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
     res.send(module);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ error: "Could not update requsted resource" });
   }
 });
 
@@ -68,12 +72,17 @@ router.delete("/modules/:id", async (req, res) => {
     const module = await Module.findByIdAndDelete(req.params.id);
 
     if (!module) {
-      return res.status(404).send();
+      return res
+        .status(404)
+        .send({ error: "Could not find requsted resource" });
     }
 
-    res.send(module);
+    res.send({
+      message: "Resource was deleted successfully",
+      deletedModule: module,
+    });
   } catch (error) {
-    res.status(500).send();
+    res.status(500).send({ error: "Could not delete requsted resource" });
   }
 });
 

@@ -12,10 +12,6 @@ const userRouter = require("./routers/user");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// app.use("/", (req, res, next) => {
-//   res.send("Hello world!");
-// });
-
 app.use(express.json());
 app.use(exchangeReportRouter);
 app.use(moduleRouter);
