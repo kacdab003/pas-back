@@ -151,6 +151,7 @@ const reportSchema = new mongoose.Schema(
     accidentDescription: {
       type: String,
       required: true,
+      trim: true,
       validate(value) {
         if (!validator.isLength(value, { min: 0, max: 300 })) {
           throw new Error("Accident Description out of bounds!");
