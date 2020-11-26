@@ -1,8 +1,17 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const reportSchema = new mongoose.Schema(
   {
-    nr: Number,
+    nr: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 1, max: 50 })) {
+          throw new Error("Report number length out of bounds!");
+        }
+      },
+    },
     worker: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -13,10 +22,30 @@ const reportSchema = new mongoose.Schema(
       enum: ["1+2", "2+3", "1+3", "1+2+3"],
       required: true,
     },
-    pwr_set: { type: Number, required: true },
-    mod_set: { type: Number, required: true },
-    module: { type: String, required: true },
-    rms: { type: String, enum: ["ZAŁ", "WYŁ"] },
+    pwr_set: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 1, max: 100 })) {
+          throw new Error("PWR_SET length out of bounds!");
+        }
+      },
+    },
+    mod_set: {
+      type: Number,
+      required: true,
+    },
+    module: {
+      type: String,
+      required: true,
+      trim: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 1, max: 4 })) {
+          throw new Error("Module length out of bounds!");
+        }
+      },
+    },
+    rms: { type: String, enum: ["ZAŁ", "WYŁ"], required: true },
     objects: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Object",
@@ -27,29 +56,106 @@ const reportSchema = new mongoose.Schema(
       enum: ["P1", "P2"],
       required: true,
     },
-    pressure: { type: Number, required: true },
+    pressure: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 1, max: 999999 })) {
+          throw new Error("Pressure length out of bounds!");
+        }
+      },
+    },
     temperatureIn: { type: Number, required: true },
     temperatureOut: { type: Number, required: true },
     resistanceIn: { type: Number, required: true },
     resistanceOut: { type: Number, required: true },
     waterCounter: { type: Number, required: true },
-    openingLevelA: { type: Number, required: true },
-    openingLevelB: { type: Number, required: true },
-    supplyAmount: { type: Number, required: true },
+    openingLevelA: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 100 })) {
+          throw new Error("Degree of opening (A) out of bounds!");
+        }
+      },
+    },
+    openingLevelB: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 100 })) {
+          throw new Error("Degree of opening (B) out of bounds!");
+        }
+      },
+    },
+    supplyAmount: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 1000 })) {
+          throw new Error("Supply count out of bounds!");
+        }
+      },
+    },
     lighting: { type: Boolean, required: true },
     isCassetteOpened: { type: Boolean, required: true },
     dabExciter: { type: String, enum: ["A", "B"] },
-    dabPowerOut: { type: Number, required: true },
-    dabPowerReceived: { type: Number, required: true },
-    dabMer: { type: Number, required: true },
-    dabShoulderUp: { type: Number, required: true },
-    dabShoulderDown: { type: Number, required: true },
+    dabPowerOut: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+          throw new Error("DAB_POWER_OUT out of bounds!");
+        }
+      },
+    },
+    dabPowerReceived: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+          throw new Error("DAB_POWER_RECEIVED out of bounds!");
+        }
+      },
+    },
+    dabMer: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+          throw new Error("DAB_MER out of bounds!");
+        }
+      },
+    },
+    dabShoulderUp: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+          throw new Error("DAB_SHOULDER_UP out of bounds!");
+        }
+      },
+    },
+    dabShoulderDown: {
+      type: Number,
+      required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+          throw new Error("DAB_SHOULDER_DOWN out of bounds!");
+        }
+      },
+    },
     dabGeneral: { type: Number, required: true },
     dabTMA: { type: Number, required: true },
     dabTMB: { type: Number, required: true },
     accidentDescription: {
       type: String,
       required: true,
+      validate(value) {
+        if (!validator.isLength(value, { min: 0, max: 300 })) {
+          throw new Error("Accident Description out of bounds!");
+        }
+      },
     },
   },
   { timestamps: { createdAt: "createdAt" } }
