@@ -1,3 +1,4 @@
+const { request } = require("express");
 const express = require("express");
 require("./db/mongoose");
 const exchangeReportRouter = require("./routers/exchangeReport");
@@ -8,7 +9,7 @@ const moduleStateCRouter = require("./routers/moduleStateC");
 const objectRouter = require("./routers/object");
 const reportRouter = require("./routers/report");
 const userRouter = require("./routers/user");
-
+const jwt = require("jsonwebtoken");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -29,3 +30,13 @@ app.use(userRouter);
 app.listen(PORT, () => {
   console.log("Server is running on " + PORT);
 });
+
+const Logowanie = async () => {
+  const token = jwt.sign({ _id: "Admin" },"password", {expiresIn: "7 days"});
+  console.log(token);
+
+  const data = jwt.verify(token ,"password");
+  console.log(data);
+};
+
+Logowanie();
