@@ -37,6 +37,47 @@ router.get("/reports/:id", async (req, res) => {
 });
 
 router.patch("/reports/:id", async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = [
+    "nr",
+    "worker",
+    "configuration",
+    "pwr_set",
+    "mod_set",
+    "module",
+    "rms",
+    "objects",
+    "pump",
+    "pressure",
+    "temperatureIn",
+    "temperatureOut",
+    "resistanceIn",
+    "resistanceOut",
+    "waterCounter",
+    "openingLevelA",
+    "openingLevelB",
+    "supplyAmount",
+    "lighting",
+    "isCassetteOpened",
+    "dabExciter",
+    "dabPowerOut",
+    "dabPowerReceived",
+    "dabMer",
+    "dabShoulderUp",
+    "dabShoulderDown",
+    "dabGeneral",
+    "dabTMA",
+    "dabTMB",
+    "accidentDescription",
+  ];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).send({ error: "Invalid updates!" });
+  }
+
   try {
     const report = await Report.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
