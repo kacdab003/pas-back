@@ -11,7 +11,9 @@ const validateUpdate = (updates, allowedUpdates) => {
   if (!isValidOperation) {
     return {
       error:
-        "Invalid updates! Fields " + invalidUpdates + " should not be updated!",
+        "Invalid updates! Fields: " +
+        invalidUpdates +
+        " should not be updated!",
     };
   }
 };
