@@ -1,5 +1,6 @@
 const express = require("express");
 const ExchangeReport = require("../models/ExchangeReport");
+const validateUpdates = require("../scripts/validateUpdates");
 const router = new express.Router();
 
 router.post("/exchangeReports", async (req, res) => {
@@ -18,7 +19,12 @@ router.get("/exchangeReports", async (req, res) => {
     const exchangeReports = await ExchangeReport.find({});
     res.send(exchangeReports);
   } catch (error) {
-    res.status(500).send({ error: "Could not find requsted resource" });
+    res
+      .status(500)
+      .send({
+        error: "Could not find requsted resource",
+        details: error.toString(),
+      });
   }
 });
 
@@ -34,7 +40,10 @@ router.get("/exchangeReports/:id", async (req, res) => {
 
     res.send(exchangeReport);
   } catch (error) {
-    res.status(500).send({ error: "Could not find requsted resource" });
+    res.status(500).send({
+      error: "Could not find requsted resource",
+      details: error.toString(),
+    });
   }
 });
 
@@ -48,12 +57,10 @@ router.patch("/exchangeReports/:id", async (req, res) => {
     "newModule",
     "exchangeWorkers",
   ];
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
+  const validUpdates = validateUpdates(updates, allowedUpdates);
 
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates!" });
+  if (validUpdates) {
+    return res.status(400).send(validUpdates);
   }
 
   try {
@@ -95,7 +102,10 @@ router.delete("/exchangeReports/:id", async (req, res) => {
       deletedExchangeReport: exchangeReport,
     });
   } catch (error) {
-    res.status(500).send({ error: "Could not delete requsted resource" });
+    res.status(500).send({
+      error: "Could not delete requsted resource",
+      details: error.toString(),
+    });
   }
 });
 

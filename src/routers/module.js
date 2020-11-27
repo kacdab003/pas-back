@@ -1,5 +1,6 @@
 const express = require("express");
 const Module = require("../models/Module");
+const validateUpdates = require("../scripts/validateUpdates");
 const router = new express.Router();
 
 router.post("/modules", async (req, res) => {
@@ -18,7 +19,12 @@ router.get("/modules", async (req, res) => {
     const modules = await Module.find({});
     res.send(modules);
   } catch (error) {
-    res.status(500).send({ error: "Could not find requsted resource" });
+    res
+      .status(500)
+      .send({
+        error: "Could not find requsted resource",
+        details: error.toString(),
+      });
   }
 });
 
@@ -34,19 +40,20 @@ router.get("/modules/:id", async (req, res) => {
 
     res.send(module);
   } catch (error) {
-    res.status(500).send({ error: "Could not find requsted resource" });
+    res.status(500).send({
+      error: "Could not find requsted resource",
+      details: error.toString(),
+    });
   }
 });
 
 router.patch("/modules/:id", async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["moduleNumber", "type", "state"];
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
+  const validUpdates = validateUpdates(updates, allowedUpdates);
 
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates!" });
+  if (validUpdates) {
+    return res.status(400).send(validUpdates);
   }
 
   try {
@@ -82,7 +89,10 @@ router.delete("/modules/:id", async (req, res) => {
       deletedModule: module,
     });
   } catch (error) {
-    res.status(500).send({ error: "Could not delete requsted resource" });
+    res.status(500).send({
+      error: "Could not delete requsted resource",
+      details: error.toString(),
+    });
   }
 });
 

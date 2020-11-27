@@ -1,5 +1,6 @@
 const express = require("express");
 const ModuleStateA = require("../models/ModuleStateA");
+const validateUpdates = require("../scripts/validateUpdates");
 const router = new express.Router();
 
 router.post("/moduleStateAs", async (req, res) => {
@@ -18,7 +19,12 @@ router.get("/moduleStateAs", async (req, res) => {
     const moduleStateAs = await ModuleStateA.find({});
     res.send(moduleStateAs);
   } catch (error) {
-    res.status(500).send({ error: "Could not find requsted resource" });
+    res
+      .status(500)
+      .send({
+        error: "Could not find requsted resource",
+        details: error.toString(),
+      });
   }
 });
 
@@ -34,19 +40,20 @@ router.get("/moduleStateAs/:id", async (req, res) => {
 
     res.send(moduleStateA);
   } catch (error) {
-    res.status(500).send({ error: "Could not find requsted resource" });
+    res.status(500).send({
+      error: "Could not find requsted resource",
+      details: error.toString(),
+    });
   }
 });
 
 router.patch("/moduleStateAs/:id", async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["moduleNumber", "accessDate"];
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
+  const validUpdates = validateUpdates(updates, allowedUpdates);
 
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates!" });
+  if (validUpdates) {
+    return res.status(400).send(validUpdates);
   }
 
   try {
@@ -86,7 +93,10 @@ router.delete("/moduleStateAs/:id", async (req, res) => {
       deletedModuleStateA: moduleStateA,
     });
   } catch (error) {
-    res.status(500).send({ error: "Could not delete requsted resource" });
+    res.status(500).send({
+      error: "Could not delete requsted resource",
+      details: error.toString(),
+    });
   }
 });
 
