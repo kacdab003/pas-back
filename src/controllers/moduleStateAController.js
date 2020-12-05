@@ -1,5 +1,5 @@
 const ModuleStateA = require("../models/ModuleStateA");
-const validateUpdates = require("../scripts/validateUpdates");
+const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddModuleA = async (req, res) => {
   const moduleStateA = new ModuleStateA(req.body);

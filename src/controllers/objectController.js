@@ -1,5 +1,5 @@
 const Object = require("../models/Object");
-const validateUpdates = require("../scripts/validateUpdates");
+const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddObject = async (req, res) => {
   const object = new Object(req.body);

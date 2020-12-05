@@ -8,39 +8,34 @@ exports.postAddExchangeReport = async (req, res) => {
     await exchangeReport.save();
     res.status(201).send(exchangeReport);
   } catch (error) {
-    res.status(400).send({ error: "Could not add requsted resource" });
+    res.status(400).send({
+      error: "Could not add requsted resource, details: " + error.message,
+    });
   }
 };
 
 exports.getAllExchangeReports = async (req, res) => {
-  try {
-    const exchangeReports = await ExchangeReport.find({});
-    res.send(exchangeReports);
-  } catch (error) {
-    res.status(500).send({
-      error: "Could not find requsted resource",
-      details: error.toString(),
+  const exchangeReports = await ExchangeReport.find({});
+  if (!exchangeReports) {
+    return res.status(404).send({
+      message: "Could not find requsted resource",
     });
   }
+
+  res.status(200).send(exchangeReports);
 };
 
 exports.getExchangeReportById = async (req, res) => {
-  try {
-    const exchangeReport = await ExchangeReport.findById(req.params.id);
+  const exchangeReportId = req.params.id;
+  const exchangeReport = await ExchangeReport.findById(exchangeReportId);
 
-    if (!exchangeReport) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
-    }
-
-    res.send(exchangeReport);
-  } catch (error) {
-    res.status(500).send({
-      error: "Could not find requsted resource",
-      details: error.toString(),
-    });
+  if (!exchangeReport) {
+    return res
+      .status(404)
+      .send({ message: "Could not find requsted resource" });
   }
+
+  return res.send(exchangeReport);
 };
 
 exports.updateExchangeReportById = async (req, res) => {
@@ -53,10 +48,10 @@ exports.updateExchangeReportById = async (req, res) => {
     "newModule",
     "exchangeWorkers",
   ];
-  const validUpdates = validateUpdates(updates, allowedUpdates);
+  const areUpdatesValid = validateUpdates(updates, allowedUpdates);
 
-  if (validUpdates) {
-    return res.status(400).send(validUpdates);
+  if (!areUpdatesValid?.isOperationValid) {
+    return res.status(400).send({ error: areUpdatesValid.error });
   }
 
   try {
@@ -75,9 +70,11 @@ exports.updateExchangeReportById = async (req, res) => {
         .send({ error: "Could not find requsted resource" });
     }
 
-    res.send(exchangeReport);
+    return res.status(200).send(exchangeReport);
   } catch (error) {
-    res.status(400).send({ error: "Could not update requsted resource" });
+    return res
+      .status(400)
+      .send({ error: "Could not update requsted resource" });
   }
 };
 
@@ -93,12 +90,12 @@ exports.removeExchangeReportById = async (req, res) => {
         .send({ error: "Could not find requsted resource" });
     }
 
-    res.send({
+    return res.status(200).send({
       message: "Resource was deleted successfully",
       deletedExchangeReport: exchangeReport,
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       error: "Could not delete requsted resource",
       details: error.toString(),
     });

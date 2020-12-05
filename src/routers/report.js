@@ -1,6 +1,6 @@
 const express = require("express");
 const Report = require("../models/Report");
-const validateUpdates = require("../scripts/validateUpdates");
+const validateUpdates = require("../utils/validateUpdates");
 const router = new express.Router();
 
 router.post("/reports", async (req, res) => {
@@ -19,12 +19,10 @@ router.get("/reports", async (req, res) => {
     const reports = await Report.find({});
     res.send(reports);
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        error: "Could not find requsted resource",
-        details: error.toString(),
-      });
+    res.status(500).send({
+      error: "Could not find requsted resource",
+      details: error.toString(),
+    });
   }
 });
 

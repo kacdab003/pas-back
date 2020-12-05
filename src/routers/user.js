@@ -1,6 +1,6 @@
 const express = require("express");
 const User = require("../models/User");
-const validateUpdates = require("../scripts/validateUpdates");
+const validateUpdates = require("../utils/validateUpdates");
 const router = new express.Router();
 
 router.post("/users", async (req, res) => {

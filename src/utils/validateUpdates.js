@@ -3,7 +3,7 @@ const validateUpdate = (updates, allowedUpdates) => {
     allowedUpdates.includes(update)
   );
   if (isValidOperation) {
-    return isValidOperation;
+    return { isOperationValid: true };
   }
 
   const invalidUpdates = updates
@@ -11,7 +11,7 @@ const validateUpdate = (updates, allowedUpdates) => {
     .join(", ");
 
   return {
-    isValid: false,
+    isOperationValid: false,
     error:
       "Invalid updates! Fields: " + invalidUpdates + " should not be updated!",
   };
