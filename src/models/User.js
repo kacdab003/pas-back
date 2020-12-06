@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -25,10 +24,12 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    validate(value) { if (value.toLowerCase().includes('password')) {
-      throw new Error('Password cannot contain "password"');
-       }
-    }
+    trim: true,
+    validate(value) {
+      if (!validator.isLength(value, { min: 8, max: undefined })) {
+        throw new Error("Password too short!");
+      }
+    },
   },
   tokens: [{
     token: {
