@@ -26,7 +26,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 1, max: 100 })) {
+        if (value < 0 || value > 100) {
           throw new Error("PWR_SET length out of bounds!");
         }
       },

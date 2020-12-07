@@ -27,7 +27,9 @@ exports.getAllExchangeReports = async (req, res) => {
 
 exports.getExchangeReportById = async (req, res) => {
   const exchangeReportId = req.params.id;
-  const exchangeReport = await ExchangeReport.findById(exchangeReportId);
+  const exchangeReport = await ExchangeReport.findById(exchangeReportId)
+    .populate("exchangeWorkers")
+    .exec();
 
   if (!exchangeReport) {
     return res
@@ -50,7 +52,7 @@ exports.updateExchangeReportById = async (req, res) => {
   ];
   const areUpdatesValid = validateUpdates(updates, allowedUpdates);
 
-  if (!areUpdatesValid?.isOperationValid) {
+  if (!areUpdatesValid.isOperationValid) {
     return res.status(400).send({ error: areUpdatesValid.error });
   }
 
@@ -72,9 +74,9 @@ exports.updateExchangeReportById = async (req, res) => {
 
     return res.status(200).send(exchangeReport);
   } catch (error) {
-    return res
-      .status(400)
-      .send({ error: "Could not update requsted resource" });
+    return res.status(400).send({
+      error: `Could not update requsted resource, details: ${error.message}`,
+    });
   }
 };
 

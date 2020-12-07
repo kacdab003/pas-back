@@ -2,13 +2,17 @@ const Module = require("../models/Module");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddModules = async (req, res) => {
-  const module = new Module(req.body);
+  const { moduleNumber, type, state } = req.body;
+  const module = new Module({ moduleNumber, type, state });
 
   try {
     await module.save();
     res.status(201).send(module);
   } catch (error) {
-    res.status(400).send({ error: "Could not add requsted resource" });
+    res.status(400).send({
+      error: `Could not add requsted resource`,
+      details: error.message,
+    });
   }
 };
 
@@ -19,7 +23,7 @@ exports.getAllModules = async (req, res) => {
   } catch (error) {
     res.status(500).send({
       error: "Could not find requsted resource",
-      details: error.toString(),
+      details: error.message,
     });
   }
 };
@@ -38,7 +42,7 @@ exports.getModuleById = async (req, res) => {
   } catch (error) {
     res.status(500).send({
       error: "Could not find requsted resource",
-      details: error.toString(),
+      details: error.message,
     });
   }
 };
@@ -66,7 +70,10 @@ exports.updateModuleById = async (req, res) => {
 
     res.send(module);
   } catch (error) {
-    res.status(400).send({ error: "Could not update requsted resource" });
+    res.status(400).send({
+      error: "Could not update requsted resource",
+      details: error.message,
+    });
   }
 };
 
@@ -87,7 +94,7 @@ exports.removeModuleById = async (req, res) => {
   } catch (error) {
     res.status(500).send({
       error: "Could not delete requsted resource",
-      details: error.toString(),
+      details: error.message,
     });
   }
 };
