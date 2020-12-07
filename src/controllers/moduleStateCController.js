@@ -8,53 +8,49 @@ exports.postAddModuleStateC = async (req, res) => {
     await moduleStateC.save();
     res.status(201).send(moduleStateC);
   } catch (error) {
-    res.status(400).send({ error: "Could not add requsted resource" });
+    res.status(400).send({
+      error: "Could not add requsted resource",
+      details: error.message,
+    });
   }
 };
 
 exports.getAllModuleStateCs = async (req, res) => {
-  try {
-    const moduleStateCs = await ModuleStateC.find({});
-    res.send(moduleStateCs);
-  } catch (error) {
-    res.status(500).send({
-      error: "Could not find requsted resource",
-      details: error.toString(),
+  const moduleStateCs = await ModuleStateC.find({});
+  if (!moduleStateCs) {
+    return res.status(404).send({
+      message: "Could not find requsted resource",
     });
   }
+
+  res.status(200).send(moduleStateCs);
 };
 
 exports.getModuleStateCById = async (req, res) => {
-  try {
-    const moduleStateC = await ModuleStateC.findById(req.params.id);
+  const moduleStateCId = req.params.id;
+  const moduleStateC = await ModuleStateC.findById(moduleStateCId);
 
-    if (!moduleStateC) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
-    }
-
-    res.send(moduleStateC);
-  } catch (error) {
-    res.status(500).send({
-      error: "Could not find requsted resource",
-      details: error.toString(),
-    });
+  if (!moduleStateC) {
+    return res
+      .status(404)
+      .send({ message: "Could not find requsted resource" });
   }
+
+  return res.send(moduleStateC);
 };
 
 exports.updateModuleStateCById = async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = [
-    "moduleNumber",
+    "module",
     "repairDate",
     "repairWorker",
     "description",
   ];
-  const validUpdates = validateUpdates(updates, allowedUpdates);
+  const areUpdatesValid = validateUpdates(updates, allowedUpdates);
 
-  if (validUpdates) {
-    return res.status(400).send(validUpdates);
+  if (!areUpdatesValid.isOperationValid) {
+    return res.status(400).send({ error: areUpdatesValid.error });
   }
 
   try {
@@ -73,9 +69,12 @@ exports.updateModuleStateCById = async (req, res) => {
         .send({ error: "Could not find requsted resource" });
     }
 
-    res.send(moduleStateC);
+    return res.status(200).send(moduleStateC);
   } catch (error) {
-    res.status(400).send({ error: "Could not update requsted resource" });
+    return res.status(400).send({
+      error: `Could not update requsted resource`,
+      details: error.message,
+    });
   }
 };
 
@@ -89,14 +88,14 @@ exports.removeModuleStateCById = async (req, res) => {
         .send({ error: "Could not find requsted resource" });
     }
 
-    res.send({
+    return res.status(200).send({
       message: "Resource was deleted successfully",
       deletedModuleStateC: moduleStateC,
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       error: "Could not delete requsted resource",
-      details: error.toString(),
+      details: error.message,
     });
   }
 };

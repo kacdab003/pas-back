@@ -1,12 +1,12 @@
-const ModuleStateB = require("../models/ModuleStateB");
+const User = require("../models/User");
 const validateUpdates = require("../utils/validateUpdates");
 
-exports.postAddModuleStateB = async (req, res) => {
-  const moduleStateB = new ModuleStateB(req.body);
+exports.postAddUser = async (req, res) => {
+  const user = new User(req.body);
 
   try {
-    await moduleStateB.save();
-    res.status(201).send(moduleStateB);
+    await user.save();
+    res.status(201).send(user);
   } catch (error) {
     res.status(400).send({
       error: "Could not add requsted resource",
@@ -15,39 +15,33 @@ exports.postAddModuleStateB = async (req, res) => {
   }
 };
 
-exports.getAllModuleStateBs = async (req, res) => {
-  const moduleStateBs = await ModuleStateB.find({});
-  if (!moduleStateBs) {
+exports.getAllUsers = async (req, res) => {
+  const users = await User.find({});
+  if (!users) {
     return res.status(404).send({
       message: "Could not find requsted resource",
     });
   }
 
-  res.status(200).send(moduleStateBs);
+  res.status(200).send(users);
 };
 
-exports.getModuleStateBById = async (req, res) => {
-  const moduleStateBId = req.params.id;
-  const moduleStateB = await ModuleStateB.findById(moduleStateBId);
+exports.getUserById = async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findById(userId);
 
-  if (!moduleStateB) {
+  if (!user) {
     return res
       .status(404)
       .send({ message: "Could not find requsted resource" });
   }
 
-  return res.send(moduleStateB);
+  return res.send(user);
 };
 
-exports.updateModuleStateBById = async (req, res) => {
+exports.updateUserById = async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = [
-    "module",
-    "objectNumber",
-    "socket",
-    "period",
-    "damageDate",
-  ];
+  const allowedUpdates = ["name", "surname", "position", "password"];
   const areUpdatesValid = validateUpdates(updates, allowedUpdates);
 
   if (!areUpdatesValid.isOperationValid) {
@@ -55,22 +49,18 @@ exports.updateModuleStateBById = async (req, res) => {
   }
 
   try {
-    const moduleStateB = await ModuleStateB.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-    if (!moduleStateB) {
+    if (!user) {
       return res
         .status(404)
         .send({ error: "Could not find requsted resource" });
     }
 
-    return res.status(200).send(moduleStateB);
+    return res.status(200).send(user);
   } catch (error) {
     return res.status(400).send({
       error: `Could not update requsted resource`,
@@ -79,11 +69,11 @@ exports.updateModuleStateBById = async (req, res) => {
   }
 };
 
-exports.removeModuleStateBById = async (req, res) => {
+exports.removeUserById = async (req, res) => {
   try {
-    const moduleStateB = await ModuleStateB.findByIdAndDelete(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.id);
 
-    if (!moduleStateB) {
+    if (!user) {
       return res
         .status(404)
         .send({ error: "Could not find requsted resource" });
@@ -91,7 +81,7 @@ exports.removeModuleStateBById = async (req, res) => {
 
     return res.status(200).send({
       message: "Resource was deleted successfully",
-      deletedModuleStateB: moduleStateB,
+      deletedUser: user,
     });
   } catch (error) {
     return res.status(500).send({

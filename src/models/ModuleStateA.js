@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 
 const moduleStateASchema = new mongoose.Schema({
-  moduleNumber: {
+  module: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Module",
     required: true,

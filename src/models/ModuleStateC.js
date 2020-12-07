@@ -1,15 +1,10 @@
 const mongoose = require("mongoose");
 
 const moduleStateCSchema = new mongoose.Schema({
-  moduleNumber: {
+  module: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Module",
     required: true,
-    validate(value) {
-      if (value < 0 || value > 999999) {
-        throw new Error("Module Number out of bounds!");
-      }
-    },
   },
   repairDate: {
     type: Date,

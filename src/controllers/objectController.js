@@ -8,48 +8,44 @@ exports.postAddObject = async (req, res) => {
     await object.save();
     res.status(201).send(object);
   } catch (error) {
-    res.status(400).send({ error: "Could not add requsted resource" });
+    res.status(400).send({
+      error: "Could not add requsted resource",
+      details: error.message,
+    });
   }
 };
 
 exports.getAllObjects = async (req, res) => {
-  try {
-    const objects = await Object.find({});
-    res.send(objects);
-  } catch (error) {
-    res.status(500).send({
-      error: "Could not find requsted resource",
-      details: error.toString(),
+  const objects = await Object.find({});
+  if (!objects) {
+    return res.status(404).send({
+      message: "Could not find requsted resource",
     });
   }
+
+  res.status(200).send(objects);
 };
 
 exports.getObjectById = async (req, res) => {
-  try {
-    const object = await Object.findById(req.params.id);
+  const objectId = req.params.id;
+  const object = await Object.findById(objectId);
 
-    if (!object) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
-    }
-
-    res.send(object);
-  } catch (error) {
-    res.status(500).send({
-      error: "Could not find requsted resource",
-      details: error.toString(),
-    });
+  if (!object) {
+    return res
+      .status(404)
+      .send({ message: "Could not find requsted resource" });
   }
+
+  return res.send(object);
 };
 
 exports.updateObjectById = async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "T1", "T2", "T3", "C1", "U"];
-  const validUpdates = validateUpdates(updates, allowedUpdates);
+  const areUpdatesValid = validateUpdates(updates, allowedUpdates);
 
-  if (validUpdates) {
-    return res.status(400).send(validUpdates);
+  if (!areUpdatesValid.isOperationValid) {
+    return res.status(400).send({ error: areUpdatesValid.error });
   }
 
   try {
@@ -64,9 +60,12 @@ exports.updateObjectById = async (req, res) => {
         .send({ error: "Could not find requsted resource" });
     }
 
-    res.send(object);
+    return res.status(200).send(object);
   } catch (error) {
-    res.status(400).send({ error: "Could not update requsted resource" });
+    return res.status(400).send({
+      error: `Could not update requsted resource`,
+      details: error.message,
+    });
   }
 };
 
@@ -80,14 +79,14 @@ exports.removeObjectById = async (req, res) => {
         .send({ error: "Could not find requsted resource" });
     }
 
-    res.send({
+    return res.status(200).send({
       message: "Resource was deleted successfully",
       deletedObject: object,
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       error: "Could not delete requsted resource",
-      details: error.toString(),
+      details: error.message,
     });
   }
 };

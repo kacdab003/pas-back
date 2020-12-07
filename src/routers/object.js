@@ -2,6 +2,7 @@ const express = require("express");
 const {
   postAddObject,
   getAllObjects,
+  getObjectById,
   updateObjectById,
   removeObjectById,
 } = require("../controllers/objectController");
@@ -11,7 +12,7 @@ router.post("/objects", postAddObject);
 
 router.get("/objects", getAllObjects);
 
-router.get("/objects/:id", getAllObjects);
+router.get("/objects/:id", getObjectById);
 
 router.patch("/objects/:id", updateObjectById);
 

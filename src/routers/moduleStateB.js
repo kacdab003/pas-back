@@ -1,7 +1,7 @@
 const express = require("express");
 const {
-  getAllModuleStateBsById,
   postAddModuleStateB,
+  getAllModuleStateBs,
   getModuleStateBById,
   updateModuleStateBById,
   removeModuleStateBById,
@@ -11,7 +11,7 @@ const router = new express.Router();
 
 router.post("/moduleStateBs", postAddModuleStateB);
 
-router.get("/moduleStateBs", getAllModuleStateBsById);
+router.get("/moduleStateBs", getAllModuleStateBs);
 
 router.get("/moduleStateBs/:id", getModuleStateBById);
 

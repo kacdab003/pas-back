@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  postAddModuleA,
+  postAddModuleStateA,
   getAllModuleStateAs,
   getModuleStateAById,
   updateModuleStateAById,
@@ -8,7 +8,7 @@ const {
 } = require("../controllers/moduleStateAController");
 const router = new express.Router();
 
-router.post("/moduleStateAs", postAddModuleA);
+router.post("/moduleStateAs", postAddModuleStateA);
 
 router.get("/moduleStateAs", getAllModuleStateAs);
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  postAddModules,
+  postAddModule,
   getAllModules,
   getModuleById,
   updateModuleById,
@@ -9,7 +9,7 @@ const {
 
 const router = new express.Router();
 
-router.post("/modules", postAddModules);
+router.post("/modules", postAddModule);
 
 router.get("/modules", getAllModules);
 
