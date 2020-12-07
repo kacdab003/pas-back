@@ -9,7 +9,8 @@ exports.postAddExchangeReport = async (req, res) => {
     res.status(201).send(exchangeReport);
   } catch (error) {
     res.status(400).send({
-      error: "Could not add requsted resource, details: " + error.message,
+      error: "Could not add requsted resource",
+      details: error.message,
     });
   }
 };
@@ -75,7 +76,8 @@ exports.updateExchangeReportById = async (req, res) => {
     return res.status(200).send(exchangeReport);
   } catch (error) {
     return res.status(400).send({
-      error: `Could not update requsted resource, details: ${error.message}`,
+      error: `Could not update requsted resource`,
+      details: error.message,
     });
   }
 };
@@ -99,7 +101,7 @@ exports.removeExchangeReportById = async (req, res) => {
   } catch (error) {
     return res.status(500).send({
       error: "Could not delete requsted resource",
-      details: error.toString(),
+      details: error.message,
     });
   }
 };
