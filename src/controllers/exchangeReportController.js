@@ -2,7 +2,23 @@ const ExchangeReport = require("../models/ExchangeReport");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddExchangeReport = async (req, res) => {
-  const exchangeReport = new ExchangeReport(req.body);
+  const {
+    exchangeDate,
+    objectNumber,
+    socket,
+    damagedModule,
+    newModule,
+    exchangeWorkers,
+  } = req.body;
+
+  const exchangeReport = new ExchangeReport({
+    exchangeDate,
+    objectNumber,
+    socket,
+    damagedModule,
+    newModule,
+    exchangeWorkers,
+  });
 
   try {
     await exchangeReport.save();
@@ -16,7 +32,12 @@ exports.postAddExchangeReport = async (req, res) => {
 };
 
 exports.getAllExchangeReports = async (req, res) => {
-  const exchangeReports = await ExchangeReport.find({});
+  const exchangeReports = await ExchangeReport.find({})
+    .populate("damagedModule")
+    .populate("newModule")
+    .populate("exchangeWorkers")
+    .exec();
+
   if (!exchangeReports) {
     return res.status(404).send({
       message: "Could not find requsted resource",
@@ -29,6 +50,8 @@ exports.getAllExchangeReports = async (req, res) => {
 exports.getExchangeReportById = async (req, res) => {
   const exchangeReportId = req.params.id;
   const exchangeReport = await ExchangeReport.findById(exchangeReportId)
+    .populate("damagedModule")
+    .populate("newModule")
     .populate("exchangeWorkers")
     .exec();
 

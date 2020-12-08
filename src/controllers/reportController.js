@@ -2,7 +2,69 @@ const Report = require("../models/Report");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddReport = async (req, res) => {
-  const report = new Report(req.body);
+  const {
+    nr,
+    worker,
+    configuration,
+    pwr_set,
+    mod_set,
+    module,
+    rms,
+    pump,
+    pressure,
+    temperatureIn,
+    temperatureOut,
+    resistanceIn,
+    resistanceOut,
+    waterCounter,
+    openingLevelA,
+    openingLevelB,
+    supplyAmount,
+    lighting,
+    isCassetteOpened,
+    dabExciter,
+    dabPowerOut,
+    dabPowerReceived,
+    dabMer,
+    dabShoulderUp,
+    dabShoulderDown,
+    dabGeneral,
+    dabTMA,
+    dabTMB,
+    accidentDescription,
+  } = req.body;
+
+  const report = new Report({
+    nr,
+    worker,
+    configuration,
+    pwr_set,
+    mod_set,
+    module,
+    rms,
+    pump,
+    pressure,
+    temperatureIn,
+    temperatureOut,
+    resistanceIn,
+    resistanceOut,
+    waterCounter,
+    openingLevelA,
+    openingLevelB,
+    supplyAmount,
+    lighting,
+    isCassetteOpened,
+    dabExciter,
+    dabPowerOut,
+    dabPowerReceived,
+    dabMer,
+    dabShoulderUp,
+    dabShoulderDown,
+    dabGeneral,
+    dabTMA,
+    dabTMB,
+    accidentDescription,
+  });
 
   try {
     await report.save();
@@ -16,7 +78,11 @@ exports.postAddReport = async (req, res) => {
 };
 
 exports.getAllReports = async (req, res) => {
-  const reports = await Report.find({});
+  const reports = await Report.find({})
+    .populate("worker")
+    .populate("objects")
+    .exec();
+
   if (!reports) {
     return res.status(404).send({
       message: "Could not find requsted resource",
@@ -28,7 +94,10 @@ exports.getAllReports = async (req, res) => {
 
 exports.getReportById = async (req, res) => {
   const reportId = req.params.id;
-  const report = await Report.findById(reportId);
+  const report = await Report.findById(reportId)
+    .populate("worker")
+    .populate("objects")
+    .exec();
 
   if (!report) {
     return res

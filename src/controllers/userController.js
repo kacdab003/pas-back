@@ -2,7 +2,9 @@ const User = require("../models/User");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddUser = async (req, res) => {
-  const user = new User(req.body);
+  const { name, surname, position, password } = req.body;
+
+  const user = new User({ name, surname, position, password });
 
   try {
     await user.save();

@@ -2,7 +2,14 @@ const ModuleStateC = require("../models/ModuleStateC");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddModuleStateC = async (req, res) => {
-  const moduleStateC = new ModuleStateC(req.body);
+  const { module, repairDate, repairWorker, description } = req.body;
+
+  const moduleStateC = new ModuleStateC({
+    module,
+    repairDate,
+    repairWorker,
+    description,
+  });
 
   try {
     await moduleStateC.save();
@@ -16,7 +23,10 @@ exports.postAddModuleStateC = async (req, res) => {
 };
 
 exports.getAllModuleStateCs = async (req, res) => {
-  const moduleStateCs = await ModuleStateC.find({});
+  const moduleStateCs = await ModuleStateC.find({})
+    .populate("module")
+    .populate("repairWorker")
+    .exec();
   if (!moduleStateCs) {
     return res.status(404).send({
       message: "Could not find requsted resource",
@@ -28,7 +38,10 @@ exports.getAllModuleStateCs = async (req, res) => {
 
 exports.getModuleStateCById = async (req, res) => {
   const moduleStateCId = req.params.id;
-  const moduleStateC = await ModuleStateC.findById(moduleStateCId);
+  const moduleStateC = await ModuleStateC.findById(moduleStateCId)
+    .populate("module")
+    .populate("repairWorker")
+    .exec();
 
   if (!moduleStateC) {
     return res

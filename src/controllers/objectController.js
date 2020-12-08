@@ -2,7 +2,9 @@ const Object = require("../models/Object");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddObject = async (req, res) => {
-  const object = new Object(req.body);
+  const { name, T1, T2, T3, C1, U } = req.body;
+
+  const object = new Object({ name, T1, T2, T3, C1, U });
 
   try {
     await object.save();
@@ -16,7 +18,7 @@ exports.postAddObject = async (req, res) => {
 };
 
 exports.getAllObjects = async (req, res) => {
-  const objects = await Object.find({});
+  const objects = await Object.find({}).populate("U").exec();
   if (!objects) {
     return res.status(404).send({
       message: "Could not find requsted resource",
@@ -28,7 +30,7 @@ exports.getAllObjects = async (req, res) => {
 
 exports.getObjectById = async (req, res) => {
   const objectId = req.params.id;
-  const object = await Object.findById(objectId);
+  const object = await Object.findById(objectId).populate("U").exec();
 
   if (!object) {
     return res

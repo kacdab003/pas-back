@@ -2,7 +2,9 @@ const ModuleStateA = require("../models/ModuleStateA");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddModuleStateA = async (req, res) => {
-  const moduleStateA = new ModuleStateA(req.body);
+  const { module, accessDate } = req.body;
+
+  const moduleStateA = new ModuleStateA({ module, accessDate });
 
   try {
     await moduleStateA.save();
@@ -16,7 +18,7 @@ exports.postAddModuleStateA = async (req, res) => {
 };
 
 exports.getAllModuleStateAs = async (req, res) => {
-  const moduleStateAs = await ModuleStateA.find({});
+  const moduleStateAs = await ModuleStateA.find({}).populate("module").exec();
   if (!moduleStateAs) {
     return res.status(404).send({
       message: "Could not find requsted resource",
@@ -28,7 +30,9 @@ exports.getAllModuleStateAs = async (req, res) => {
 
 exports.getModuleStateAById = async (req, res) => {
   const moduleStateAId = req.params.id;
-  const moduleStateA = await ModuleStateA.findById(moduleStateAId);
+  const moduleStateA = await ModuleStateA.findById(moduleStateAId)
+    .populate("module")
+    .exec();
 
   if (!moduleStateA) {
     return res

@@ -2,7 +2,13 @@ const Module = require("../models/Module");
 const validateUpdates = require("../utils/validateUpdates");
 
 exports.postAddModule = async (req, res) => {
-  const module = new Module(req.body);
+  const { moduleNumber, type, state } = req.body;
+
+  const module = new Module({
+    moduleNumber,
+    type,
+    state,
+  });
 
   try {
     await module.save();
