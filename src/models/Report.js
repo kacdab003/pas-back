@@ -46,11 +46,11 @@ const reportSchema = new mongoose.Schema(
       },
     },
     rms: { type: String, enum: ["ZAŁ", "WYŁ"], required: true },
-    objects: {
+    objects: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Object",
       required: true,
-    },
+    },],
     pump: {
       type: String,
       enum: ["P1", "P2"],
