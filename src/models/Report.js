@@ -7,7 +7,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 1, max: 50 })) {
+        if (value < 1 || value > 50) {
           throw new Error("Report number length out of bounds!");
         }
       },
@@ -60,7 +60,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 1, max: 999999 })) {
+        if (value < 0 || value > 999999) {
           throw new Error("Pressure length out of bounds!");
         }
       },
@@ -74,7 +74,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 100 })) {
+        if (value < 0 || value > 100){
           throw new Error("Degree of opening (A) out of bounds!");
         }
       },
@@ -83,7 +83,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 100 })) {
+        if (value < 0 || value > 100) {
           throw new Error("Degree of opening (B) out of bounds!");
         }
       },
@@ -92,7 +92,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 1000 })) {
+        if (value < 0 || value > 1000) {
           throw new Error("Supply count out of bounds!");
         }
       },
@@ -104,7 +104,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+        if (value < 0 || value > 10000) {
           throw new Error("DAB_POWER_OUT out of bounds!");
         }
       },
@@ -113,7 +113,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+        if (value < 0 || value > 10000) {
           throw new Error("DAB_POWER_RECEIVED out of bounds!");
         }
       },
@@ -122,7 +122,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+        if (value < 0 || value > 10000){
           throw new Error("DAB_MER out of bounds!");
         }
       },
@@ -131,7 +131,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+        if (value < 0 || value > 10000){
           throw new Error("DAB_SHOULDER_UP out of bounds!");
         }
       },
@@ -140,7 +140,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (!validator.isLength(value, { min: 0, max: 10000 })) {
+        if (value < 0 || value > 10000) {
           throw new Error("DAB_SHOULDER_DOWN out of bounds!");
         }
       },
