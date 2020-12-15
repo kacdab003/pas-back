@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("./db/mongoose");
 const exchangeReportRouter = require("./routers/exchangeReport");
 const moduleRouter = require("./routers/module");
@@ -11,7 +12,7 @@ const userRouter = require("./routers/user");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+app.use(cors());
 app.use(express.json());
 app.use(exchangeReportRouter);
 app.use(moduleRouter);
