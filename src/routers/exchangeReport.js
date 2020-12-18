@@ -6,11 +6,12 @@ const {
   updateExchangeReportById,
   removeExchangeReportById,
 } = require("../controllers/exchangeReportController");
+const auth = require("../middleware/auth");
 const router = new express.Router();
 
 router.post("/exchangeReports", postAddExchangeReport);
 
-router.get("/exchangeReports", getAllExchangeReports);
+router.get("/exchangeReports", auth, getAllExchangeReports);
 
 router.get("/exchangeReports/:id", getExchangeReportById);
 
