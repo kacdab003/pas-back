@@ -6,17 +6,17 @@ const {
   updateModuleById,
   removeModuleById,
 } = require("../controllers/moduleController");
-
+const auth = require("../middleware/auth");
 const router = new express.Router();
 
-router.post("/modules", postAddModule);
+router.post("/modules", auth, postAddModule);
 
-router.get("/modules", getAllModules);
+router.get("/modules", auth, getAllModules);
 
-router.get("/modules/:id", getModuleById);
+router.get("/modules/:id", auth, getModuleById);
 
-router.patch("/modules/:id", updateModuleById);
+router.patch("/modules/:id", auth, updateModuleById);
 
-router.delete("/modules/:id", removeModuleById);
+router.delete("/modules/:id", auth, removeModuleById);
 
 module.exports = router;

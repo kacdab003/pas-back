@@ -6,17 +6,17 @@ const {
   updateModuleStateBById,
   removeModuleStateBById,
 } = require("../controllers/moduleStateBController");
-
+const auth = require("../middleware/auth");
 const router = new express.Router();
 
-router.post("/moduleStateBs", postAddModuleStateB);
+router.post("/moduleStateBs", auth, postAddModuleStateB);
 
-router.get("/moduleStateBs", getAllModuleStateBs);
+router.get("/moduleStateBs", auth, getAllModuleStateBs);
 
-router.get("/moduleStateBs/:id", getModuleStateBById);
+router.get("/moduleStateBs/:id", auth, getModuleStateBById);
 
-router.patch("/moduleStateBs/:id", updateModuleStateBById);
+router.patch("/moduleStateBs/:id", auth, updateModuleStateBById);
 
-router.delete("/moduleStateBs/:id", removeModuleStateBById);
+router.delete("/moduleStateBs/:id", auth, removeModuleStateBById);
 
 module.exports = router;
