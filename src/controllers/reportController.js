@@ -79,7 +79,7 @@ exports.postAddReport = async (req, res) => {
 
 exports.getAllReports = async (req, res) => {
   const reports = await Report.find({})
-    .populate("worker")
+    .populate("worker", { name: 1, surname: 1, position: 1 })
     .populate("objects")
     .exec();
 
@@ -95,7 +95,7 @@ exports.getAllReports = async (req, res) => {
 exports.getReportById = async (req, res) => {
   const reportId = req.params.id;
   const report = await Report.findById(reportId)
-    .populate("worker")
+    .populate("worker", { name: 1, surname: 1, position: 1 })
     .populate("objects")
     .exec();
 

@@ -9,14 +9,14 @@ const {
 const auth = require("../middleware/auth");
 const router = new express.Router();
 
-router.post("/exchangeReports", postAddExchangeReport);
+router.post("/exchangeReports", auth, postAddExchangeReport);
 
 router.get("/exchangeReports", auth, getAllExchangeReports);
 
-router.get("/exchangeReports/:id", getExchangeReportById);
+router.get("/exchangeReports/:id", auth, getExchangeReportById);
 
-router.patch("/exchangeReports/:id", updateExchangeReportById);
+router.patch("/exchangeReports/:id", auth, updateExchangeReportById);
 
-router.delete("/exchangeReports/:id", removeExchangeReportById);
+router.delete("/exchangeReports/:id", auth, removeExchangeReportById);
 
 module.exports = router;

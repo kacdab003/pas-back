@@ -7,16 +7,17 @@ const {
   updateReportById,
   removeReportById,
 } = require("../controllers/reportController");
+const auth = require("../middleware/auth");
 const router = new express.Router();
 
-router.post("/reports", postAddReport);
+router.post("/reports", auth, postAddReport);
 
-router.get("/reports", getAllReports);
+router.get("/reports", auth, getAllReports);
 
-router.get("/reports/:id", getReportById);
+router.get("/reports/:id", auth, getReportById);
 
-router.patch("/reports/:id", updateReportById);
+router.patch("/reports/:id", auth, updateReportById);
 
-router.delete("/reports/:id", removeReportById);
+router.delete("/reports/:id", auth, removeReportById);
 
 module.exports = router;
