@@ -32,13 +32,21 @@ exports.login = async (req, res, next) => {
   if (!foundUser) {
     return res.status(404).send({ message: "Could not authenticate" });
   }
-  const isPasswordValid = bcrypt.compare(password, foundUser.password);
+  const isPasswordValid = await bcrypt.compare(password, foundUser.password);
   if (!isPasswordValid) {
     return res.status(404).send({ message: "Could not authenticate" });
   }
 
-  const token = jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET);
-  return res.status(200).send({ token });
+  const token = jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.TOKEN_EXPIRES_IN,
+  });
+  const userFullName = foundUser.name + " " + foundUser.surname;
+  return res.status(200).send({
+    token,
+    fullName: userFullName,
+    expiresIn: Number(process.env.TOKEN_EXPIRES_IN),
+    userId: foundUser._id,
+  });
 };
 
 exports.getAllUsers = async (req, res) => {
