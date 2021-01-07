@@ -12,11 +12,11 @@ const reportSchema = new mongoose.Schema(
         }
       },
     },
-    worker: {
+    workers: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    },
+    }],
     configuration: {
       type: String,
       enum: ["1+2", "2+3", "1+3", "1+2+3"],

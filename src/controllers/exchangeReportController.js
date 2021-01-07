@@ -8,7 +8,7 @@ exports.postAddExchangeReport = async (req, res) => {
     socket,
     damagedModule,
     newModule,
-    exchangeWorkers,
+    exchangeWorker,
   } = req.body;
 
   const exchangeReport = new ExchangeReport({
@@ -17,7 +17,7 @@ exports.postAddExchangeReport = async (req, res) => {
     socket,
     damagedModule,
     newModule,
-    exchangeWorkers,
+    exchangeWorker,
   });
 
   try {
@@ -35,7 +35,7 @@ exports.getAllExchangeReports = async (req, res) => {
   const exchangeReports = await ExchangeReport.find({})
     .populate("damagedModule")
     .populate("newModule")
-    .populate("exchangeWorkers", { name: 1, surname: 1, position: 1 })
+    .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
     .exec();
 
   if (!exchangeReports) {
@@ -52,7 +52,7 @@ exports.getExchangeReportById = async (req, res) => {
   const exchangeReport = await ExchangeReport.findById(exchangeReportId)
     .populate("damagedModule")
     .populate("newModule")
-    .populate("exchangeWorkers", { name: 1, surname: 1, position: 1 })
+    .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
     .exec();
 
   if (!exchangeReport) {
@@ -72,7 +72,7 @@ exports.updateExchangeReportById = async (req, res) => {
     "socket",
     "damagedModule",
     "newModule",
-    "exchangeWorkers",
+    "exchangeWorker",
   ];
   const areUpdatesValid = validateUpdates(updates, allowedUpdates);
 
