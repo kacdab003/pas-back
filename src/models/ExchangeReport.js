@@ -33,7 +33,7 @@ const exchangeReportSchema = new mongoose.Schema({
     ref: "Module",
     required: true,
   },
-  exchangeWorkers: {
+  exchangeWorker: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
