@@ -9,7 +9,7 @@ const moduleStateCRouter = require("./routers/moduleStateC");
 const objectRouter = require("./routers/object");
 const reportRouter = require("./routers/report");
 const authRouter = require("./routers/auth");
-
+const workersRouter = require("./routers/workers");
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
@@ -22,6 +22,7 @@ app.use(moduleStateCRouter);
 app.use(objectRouter);
 app.use(reportRouter);
 app.use(authRouter);
+app.use(workersRouter);
 
 app.listen(PORT, () => {
   console.log("Server is running on " + PORT);
