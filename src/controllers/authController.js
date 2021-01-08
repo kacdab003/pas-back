@@ -2,6 +2,7 @@ const User = require("../models/User");
 const validateUpdates = require("../utils/validateUpdates");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const errorTypes = require("../config/errorTypes");
 
 exports.signUp = async (req, res, next) => {
   const { login, name, surname, position, password } = req.body;
@@ -18,75 +19,71 @@ exports.signUp = async (req, res, next) => {
     });
     return res.status(201).send({ token: userToken });
   } catch (error) {
-    return res.status(400).send({
-      error: "Could not add requsted resource",
-      details: error.message,
-    });
+    next(errorTypes.INVALID_REQUEST);
   }
 };
 
 exports.login = async (req, res, next) => {
-  const { login, password } = req.body;
+  try {
+    const { login, password } = req.body;
 
-  const foundUser = await User.findOne({ login });
-  if (!foundUser) {
-    return res.status(404).send({ message: "Could not authenticate" });
-  }
-  const isPasswordValid = await bcrypt.compare(password, foundUser.password);
-  if (!isPasswordValid) {
-    return res.status(404).send({ message: "Could not authenticate" });
-  }
+    const foundUser = await User.findOne({ login });
+    if (!foundUser) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+    const isPasswordValid = await bcrypt.compare(password, foundUser.password);
+    if (!isPasswordValid) {
+      throw new Error(errorTypes.INVALID_REQUEST);
+    }
 
-  const token = jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.TOKEN_EXPIRES_IN,
-  });
-  const userFullName = foundUser.name + " " + foundUser.surname;
-  return res.status(200).send({
-    token,
-    fullName: userFullName,
-    expiresIn: Number(process.env.TOKEN_EXPIRES_IN),
-    userId: foundUser._id,
-  });
+    const token = jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.TOKEN_EXPIRES_IN,
+    });
+    const userFullName = foundUser.name + " " + foundUser.surname;
+    return res.status(200).send({
+      token,
+      fullName: userFullName,
+      expiresIn: Number(process.env.TOKEN_EXPIRES_IN),
+      userId: foundUser._id,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.getAllUsers = async (req, res) => {
-  const users = await User.find({});
-  if (!users) {
-    return res.status(404).send({
-      message: "Could not find requsted resource",
-    });
+  try {
+    const users = await User.find({});
+    if (!users) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+    return res.status(200).send(users);
+  } catch (error) {
+    next(error);
   }
-
-  return res.status(200).send(users);
 };
 
 exports.updateUserById = async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "surname", "position", "password"];
-  const areUpdatesValid = validateUpdates(updates, allowedUpdates);
-
-  if (!areUpdatesValid.isOperationValid) {
-    return res.status(400).send({ error: areUpdatesValid.error });
-  }
-
   try {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ["name", "surname", "position", "password"];
+    const areUpdatesValid = validateUpdates(updates, allowedUpdates);
+
+    if (!areUpdatesValid.isOperationValid) {
+      throw new Error(errorTypes.INVALID_REQUEST);
+    }
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
 
     if (!user) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send(user);
   } catch (error) {
-    return res.status(400).send({
-      error: `Could not update requsted resource`,
-      details: error.message,
-    });
+    next(error);
   }
 };
 
@@ -95,9 +92,7 @@ exports.removeUserById = async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
 
     if (!user) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send({
@@ -105,9 +100,6 @@ exports.removeUserById = async (req, res) => {
       deletedUser: user,
     });
   } catch (error) {
-    return res.status(500).send({
-      error: "Could not delete requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };
