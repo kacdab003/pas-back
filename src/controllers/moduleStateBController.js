@@ -1,7 +1,8 @@
 const ModuleStateB = require("../models/ModuleStateB");
 const validateUpdates = require("../utils/validateUpdates");
+const errorTypes = require("../config/errorTypes");
 
-exports.postAddModuleStateB = async (req, res) => {
+exports.postAddModuleStateB = async (req, res, next) => {
   const { module, objectNumber, socket, period, damageDate } = req.body;
 
   const moduleStateB = new ModuleStateB({
@@ -23,18 +24,16 @@ exports.postAddModuleStateB = async (req, res) => {
   }
 };
 
-exports.getAllModuleStateBs = async (req, res) => {
+exports.getAllModuleStateBs = async (req, res, next) => {
   const moduleStateBs = await ModuleStateB.find({}).populate("module").exec();
   if (!moduleStateBs) {
-    return res.status(404).send({
-      message: "Could not find requsted resource",
-    });
+    throw new Error();
   }
 
   res.status(200).send(moduleStateBs);
 };
 
-exports.getModuleStateBById = async (req, res) => {
+exports.getModuleStateBById = async (req, res, next) => {
   const moduleStateBId = req.params.id;
   const moduleStateB = await ModuleStateB.findById(moduleStateBId)
     .populate("module")
@@ -46,10 +45,10 @@ exports.getModuleStateBById = async (req, res) => {
       .send({ message: "Could not find requsted resource" });
   }
 
-  return res.send(moduleStateB);
+  return res.status(200).send(moduleStateB);
 };
 
-exports.updateModuleStateBById = async (req, res) => {
+exports.updateModuleStateBById = async (req, res, next) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = [
     "module",
@@ -88,7 +87,7 @@ exports.updateModuleStateBById = async (req, res) => {
   }
 };
 
-exports.removeModuleStateBById = async (req, res) => {
+exports.removeModuleStateBById = async (req, res, next) => {
   try {
     const moduleStateB = await ModuleStateB.findByIdAndDelete(req.params.id);
 

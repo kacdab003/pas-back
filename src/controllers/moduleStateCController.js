@@ -1,72 +1,76 @@
 const ModuleStateC = require("../models/ModuleStateC");
 const validateUpdates = require("../utils/validateUpdates");
+const errorTypes = require("../config/errorTypes");
 
-exports.postAddModuleStateC = async (req, res) => {
-  const { module, repairDate, repairWorker, description } = req.body;
-
-  const moduleStateC = new ModuleStateC({
-    module,
-    repairDate,
-    repairWorker,
-    description,
-  });
-
+exports.postAddModuleStateC = async (req, res, next) => {
   try {
+    const { module, repairDate, repairWorker, description } = req.body;
+
+    const moduleStateC = new ModuleStateC({
+      module,
+      repairDate,
+      repairWorker,
+      description,
+    });
     await moduleStateC.save();
     res.status(201).send(moduleStateC);
   } catch (error) {
-    res.status(400).send({
+    return res.status(400).send({
       error: "Could not add requsted resource",
       details: error.message,
     });
   }
 };
 
-exports.getAllModuleStateCs = async (req, res) => {
-  const moduleStateCs = await ModuleStateC.find({})
-    .populate("module")
-    .populate("repairWorker")
-    .exec();
-  if (!moduleStateCs) {
-    return res.status(404).send({
-      message: "Could not find requsted resource",
-    });
-  }
-
-  res.status(200).send(moduleStateCs);
-};
-
-exports.getModuleStateCById = async (req, res) => {
-  const moduleStateCId = req.params.id;
-  const moduleStateC = await ModuleStateC.findById(moduleStateCId)
-    .populate("module")
-    .populate("repairWorker")
-    .exec();
-
-  if (!moduleStateC) {
-    return res
-      .status(404)
-      .send({ message: "Could not find requsted resource" });
-  }
-
-  return res.send(moduleStateC);
-};
-
-exports.updateModuleStateCById = async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = [
-    "module",
-    "repairDate",
-    "repairWorker",
-    "description",
-  ];
-  const areUpdatesValid = validateUpdates(updates, allowedUpdates);
-
-  if (!areUpdatesValid.isOperationValid) {
-    return res.status(400).send({ error: areUpdatesValid.error });
-  }
-
+exports.getAllModuleStateCs = async (req, res, next) => {
   try {
+    const moduleStateCs = await ModuleStateC.find({})
+      .populate("module")
+      .populate("repairWorker")
+      .exec();
+    if (!moduleStateCs) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.status(200).send(moduleStateCs);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getModuleStateCById = async (req, res, next) => {
+  try {
+    const moduleStateCId = req.params.id;
+    const moduleStateC = await ModuleStateC.findById(moduleStateCId)
+      .populate("module")
+      .populate("repairWorker")
+      .exec();
+
+    if (!moduleStateC) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.status(200).send(moduleStateC);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateModuleStateCById = async (req, res, next) => {
+  try {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = [
+      "module",
+      "repairDate",
+      "repairWorker",
+      "description",
+    ];
+    const areUpdatesValid = validateUpdates(updates, allowedUpdates);
+
+    if (!areUpdatesValid.isOperationValid) {
+      return res.status(400).send({ error: areUpdatesValid.error });
+    }
+
     const moduleStateC = await ModuleStateC.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -77,28 +81,21 @@ exports.updateModuleStateCById = async (req, res) => {
     );
 
     if (!moduleStateC) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send(moduleStateC);
   } catch (error) {
-    return res.status(400).send({
-      error: `Could not update requsted resource`,
-      details: error.message,
-    });
+    next(error);
   }
 };
 
-exports.removeModuleStateCById = async (req, res) => {
+exports.removeModuleStateCById = async (req, res, next) => {
   try {
     const moduleStateC = await ModuleStateC.findByIdAndDelete(req.params.id);
 
     if (!moduleStateC) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send({
@@ -106,9 +103,6 @@ exports.removeModuleStateCById = async (req, res) => {
       deletedModuleStateC: moduleStateC,
     });
   } catch (error) {
-    return res.status(500).send({
-      error: "Could not delete requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };

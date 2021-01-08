@@ -29,7 +29,7 @@ exports.login = async (req, res, next) => {
 
     const foundUser = await User.findOne({ login });
     if (!foundUser) {
-      throw new Error(errorTypes.NOT_FOUND_ERROR);
+      throw new Error(errorTypes.INVALID_REQUEST);
     }
     const isPasswordValid = await bcrypt.compare(password, foundUser.password);
     if (!isPasswordValid) {
@@ -51,7 +51,7 @@ exports.login = async (req, res, next) => {
   }
 };
 
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     if (!users) {
@@ -63,7 +63,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.updateUserById = async (req, res) => {
+exports.updateUserById = async (req, res, next) => {
   try {
     const updates = Object.keys(req.body);
     const allowedUpdates = ["name", "surname", "position", "password"];
@@ -87,7 +87,7 @@ exports.updateUserById = async (req, res) => {
   }
 };
 
-exports.removeUserById = async (req, res) => {
+exports.removeUserById = async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
 

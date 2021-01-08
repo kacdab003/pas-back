@@ -1,12 +1,12 @@
 const Object = require("../models/Object");
 const validateUpdates = require("../utils/validateUpdates");
+const errorTypes = require("../config/errorTypes");
 
-exports.postAddObject = async (req, res) => {
-  const { name, T1, T2, T3, C1, U } = req.body;
-
-  const object = new Object({ name, T1, T2, T3, C1, U });
-
+exports.postAddObject = async (req, res, next) => {
   try {
+    const { name, T1, T2, T3, C1, U } = req.body;
+    const object = new Object({ name, T1, T2, T3, C1, U });
+
     await object.save();
     res.status(201).send(object);
   } catch (error) {
@@ -17,31 +17,35 @@ exports.postAddObject = async (req, res) => {
   }
 };
 
-exports.getAllObjects = async (req, res) => {
-  const objects = await Object.find({}).populate("U").exec();
-  if (!objects) {
-    return res.status(404).send({
-      message: "Could not find requsted resource",
-    });
-  }
+exports.getAllObjects = async (req, res, next) => {
+  try {
+    const objects = await Object.find({}).populate("U").exec();
+    if (!objects) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
 
-  res.status(200).send(objects);
+    return res.status(200).send(objects);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.getObjectById = async (req, res) => {
-  const objectId = req.params.id;
-  const object = await Object.findById(objectId).populate("U").exec();
+exports.getObjectById = async (req, res, next) => {
+  try {
+    const objectId = req.params.id;
+    const object = await Object.findById(objectId).populate("U").exec();
 
-  if (!object) {
-    return res
-      .status(404)
-      .send({ message: "Could not find requsted resource" });
+    if (!object) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.status(200).send(object);
+  } catch (error) {
+    next(error);
   }
-
-  return res.send(object);
 };
 
-exports.updateObjectById = async (req, res) => {
+exports.updateObjectById = async (req, res, next) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "T1", "T2", "T3", "C1", "U"];
   const areUpdatesValid = validateUpdates(updates, allowedUpdates);
@@ -57,28 +61,21 @@ exports.updateObjectById = async (req, res) => {
     });
 
     if (!object) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send(object);
   } catch (error) {
-    return res.status(400).send({
-      error: `Could not update requsted resource`,
-      details: error.message,
-    });
+    next(error);
   }
 };
 
-exports.removeObjectById = async (req, res) => {
+exports.removeObjectById = async (req, res, next) => {
   try {
     const object = await Object.findByIdAndDelete(req.params.id);
 
     if (!object) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send({
@@ -86,9 +83,6 @@ exports.removeObjectById = async (req, res) => {
       deletedObject: object,
     });
   } catch (error) {
-    return res.status(500).send({
-      error: "Could not delete requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };
