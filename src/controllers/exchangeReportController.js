@@ -1,5 +1,6 @@
 const ExchangeReport = require("../models/ExchangeReport");
 const validateUpdates = require("../utils/validateUpdates");
+const errorTypes = require("../config/errorTypes");
 
 exports.postAddExchangeReport = async (req, res) => {
   const {
@@ -32,55 +33,58 @@ exports.postAddExchangeReport = async (req, res) => {
 };
 
 exports.getAllExchangeReports = async (req, res) => {
-  const exchangeReports = await ExchangeReport.find({})
-    .populate("damagedModule")
-    .populate("newModule")
-    .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
-    .exec();
+  try {
+    const exchangeReports = await ExchangeReport.find({})
+      .populate("damagedModule")
+      .populate("newModule")
+      .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
+      .exec();
 
-  if (!exchangeReports) {
-    return res.status(404).send({
-      message: "Could not find requsted resource",
-    });
+    if (!exchangeReports) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.status(200).send(exchangeReports);
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).send(exchangeReports);
 };
 
 exports.getExchangeReportById = async (req, res) => {
-  const exchangeReportId = req.params.id;
-  const exchangeReport = await ExchangeReport.findById(exchangeReportId)
-    .populate("damagedModule")
-    .populate("newModule")
-    .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
-    .exec();
+  try {
+    const exchangeReportId = req.params.id;
+    const exchangeReport = await ExchangeReport.findById(exchangeReportId)
+      .populate("damagedModule")
+      .populate("newModule")
+      .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
+      .exec();
 
-  if (!exchangeReport) {
-    return res
-      .status(404)
-      .send({ message: "Could not find requsted resource" });
+    if (!exchangeReport) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.send(exchangeReport);
+  } catch (error) {
+    next(error);
   }
-
-  return res.send(exchangeReport);
 };
 
 exports.updateExchangeReportById = async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = [
-    "exchangeDate",
-    "objectNumber",
-    "socket",
-    "damagedModule",
-    "newModule",
-    "exchangeWorker",
-  ];
-  const areUpdatesValid = validateUpdates(updates, allowedUpdates);
-
-  if (!areUpdatesValid.isOperationValid) {
-    return res.status(400).send({ error: areUpdatesValid.error });
-  }
-
   try {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = [
+      "exchangeDate",
+      "objectNumber",
+      "socket",
+      "damagedModule",
+      "newModule",
+      "exchangeWorker",
+    ];
+    const areUpdatesValid = validateUpdates(updates, allowedUpdates);
+
+    if (!areUpdatesValid.isOperationValid) {
+      throw new Error(errorTypes.INVALID_REQUEST);
+    }
     const exchangeReport = await ExchangeReport.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -91,17 +95,12 @@ exports.updateExchangeReportById = async (req, res) => {
     );
 
     if (!exchangeReport) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send(exchangeReport);
   } catch (error) {
-    return res.status(400).send({
-      error: `Could not update requsted resource`,
-      details: error.message,
-    });
+    next(error);
   }
 };
 
@@ -112,9 +111,7 @@ exports.removeExchangeReportById = async (req, res) => {
     );
 
     if (!exchangeReport) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send({
@@ -122,9 +119,6 @@ exports.removeExchangeReportById = async (req, res) => {
       deletedExchangeReport: exchangeReport,
     });
   } catch (error) {
-    return res.status(500).send({
-      error: "Could not delete requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };
