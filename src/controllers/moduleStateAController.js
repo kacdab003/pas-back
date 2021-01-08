@@ -1,12 +1,12 @@
 const ModuleStateA = require("../models/ModuleStateA");
 const validateUpdates = require("../utils/validateUpdates");
+const errorTypes = require("../config/errorTypes");
 
-exports.postAddModuleStateA = async (req, res) => {
-  const { module, accessDate } = req.body;
-
-  const moduleStateA = new ModuleStateA({ module, accessDate });
-
+exports.postAddModuleStateA = async (req, res, next) => {
   try {
+    const { module, accessDate } = req.body;
+    const moduleStateA = new ModuleStateA({ module, accessDate });
+
     await moduleStateA.save();
     res.status(201).send(moduleStateA);
   } catch (error) {
@@ -17,33 +17,37 @@ exports.postAddModuleStateA = async (req, res) => {
   }
 };
 
-exports.getAllModuleStateAs = async (req, res) => {
-  const moduleStateAs = await ModuleStateA.find({}).populate("module").exec();
-  if (!moduleStateAs) {
-    return res.status(404).send({
-      message: "Could not find requsted resource",
-    });
-  }
+exports.getAllModuleStateAs = async (req, res, next) => {
+  try {
+    const moduleStateAs = await ModuleStateA.find({}).populate("module").exec();
+    if (!moduleStateAs) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
 
-  res.status(200).send(moduleStateAs);
+    return res.status(200).send(moduleStateAs);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.getModuleStateAById = async (req, res) => {
-  const moduleStateAId = req.params.id;
-  const moduleStateA = await ModuleStateA.findById(moduleStateAId)
-    .populate("module")
-    .exec();
+exports.getModuleStateAById = async (req, res, next) => {
+  try {
+    const moduleStateAId = req.params.id;
+    const moduleStateA = await ModuleStateA.findById(moduleStateAId)
+      .populate("module")
+      .exec();
 
-  if (!moduleStateA) {
-    return res
-      .status(404)
-      .send({ message: "Could not find requsted resource" });
+    if (!moduleStateA) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.status(200).send(moduleStateA);
+  } catch (error) {
+    next(error);
   }
-
-  return res.send(moduleStateA);
 };
 
-exports.updateModuleStateAById = async (req, res) => {
+exports.updateModuleStateAById = async (req, res, next) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["module", "accessDate"];
   const areUpdatesValid = validateUpdates(updates, allowedUpdates);
@@ -63,28 +67,21 @@ exports.updateModuleStateAById = async (req, res) => {
     );
 
     if (!moduleStateA) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.INVALID_REQUEST);
     }
 
     return res.status(200).send(moduleStateA);
   } catch (error) {
-    return res.status(400).send({
-      error: `Could not update requsted resource`,
-      details: error.message,
-    });
+    next(err);
   }
 };
 
-exports.removeModuleStateAById = async (req, res) => {
+exports.removeModuleStateAById = async (req, res, next) => {
   try {
     const moduleStateA = await ModuleStateA.findByIdAndDelete(req.params.id);
 
     if (!moduleStateA) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send({
@@ -92,9 +89,6 @@ exports.removeModuleStateAById = async (req, res) => {
       deletedModuleStateA: moduleStateA,
     });
   } catch (error) {
-    return res.status(500).send({
-      error: "Could not delete requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };

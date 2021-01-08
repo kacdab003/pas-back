@@ -1,7 +1,7 @@
 const Report = require("../models/Report");
 const validateUpdates = require("../utils/validateUpdates");
-
-exports.postAddReport = async (req, res) => {
+const errorTypes = require("../config/errorTypes");
+exports.postAddReport = async (req, res, next) => {
   const {
     nr,
     workers,
@@ -77,38 +77,42 @@ exports.postAddReport = async (req, res) => {
   }
 };
 
-exports.getAllReports = async (req, res) => {
-  const reports = await Report.find({})
-    .populate("workers", { name: 1, surname: 1, position: 1 })
-    .populate("objects")
-    .exec();
+exports.getAllReports = async (req, res, next) => {
+  try {
+    const reports = await Report.find({})
+      .populate("workers", { name: 1, surname: 1, position: 1 })
+      .populate("objects")
+      .exec();
 
-  if (!reports) {
-    return res.status(404).send({
-      message: "Could not find requsted resource",
-    });
+    if (!reports) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.status(200).send(reports);
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).send(reports);
 };
 
-exports.getReportById = async (req, res) => {
-  const reportId = req.params.id;
-  const report = await Report.findById(reportId)
-    .populate("workers", { name: 1, surname: 1, position: 1 })
-    .populate("objects")
-    .exec();
+exports.getReportById = async (req, res, next) => {
+  try {
+    const reportId = req.params.id;
+    const report = await Report.findById(reportId)
+      .populate("workers", { name: 1, surname: 1, position: 1 })
+      .populate("objects")
+      .exec();
 
-  if (!report) {
-    return res
-      .status(404)
-      .send({ message: "Could not find requsted resource" });
+    if (!report) {
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    return res.status(200).send(report);
+  } catch (error) {
+    next(error);
   }
-
-  return res.send(report);
 };
 
-exports.updateReportById = async (req, res) => {
+exports.updateReportById = async (req, res, next) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = [
     "nr",
@@ -155,28 +159,21 @@ exports.updateReportById = async (req, res) => {
     });
 
     if (!report) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send(report);
   } catch (error) {
-    return res.status(400).send({
-      error: `Could not update requsted resource`,
-      details: error.message,
-    });
+    next(error);
   }
 };
 
-exports.removeReportById = async (req, res) => {
+exports.removeReportById = async (req, res, next) => {
   try {
     const report = await Report.findByIdAndDelete(req.params.id);
 
     if (!report) {
-      return res
-        .status(404)
-        .send({ error: "Could not find requsted resource" });
+      throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
     return res.status(200).send({
@@ -184,9 +181,6 @@ exports.removeReportById = async (req, res) => {
       deletedReport: report,
     });
   } catch (error) {
-    return res.status(500).send({
-      error: "Could not delete requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };

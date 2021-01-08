@@ -2,7 +2,7 @@ const ExchangeReport = require("../models/ExchangeReport");
 const validateUpdates = require("../utils/validateUpdates");
 const errorTypes = require("../config/errorTypes");
 
-exports.postAddExchangeReport = async (req, res) => {
+exports.postAddExchangeReport = async (req, res, next) => {
   const {
     exchangeDate,
     objectNumber,
@@ -32,7 +32,7 @@ exports.postAddExchangeReport = async (req, res) => {
   }
 };
 
-exports.getAllExchangeReports = async (req, res) => {
+exports.getAllExchangeReports = async (req, res, next) => {
   try {
     const exchangeReports = await ExchangeReport.find({})
       .populate("damagedModule")
@@ -50,7 +50,7 @@ exports.getAllExchangeReports = async (req, res) => {
   }
 };
 
-exports.getExchangeReportById = async (req, res) => {
+exports.getExchangeReportById = async (req, res, next) => {
   try {
     const exchangeReportId = req.params.id;
     const exchangeReport = await ExchangeReport.findById(exchangeReportId)
@@ -63,13 +63,13 @@ exports.getExchangeReportById = async (req, res) => {
       throw new Error(errorTypes.NOT_FOUND_ERROR);
     }
 
-    return res.send(exchangeReport);
+    return res.status(200).send(exchangeReport);
   } catch (error) {
     next(error);
   }
 };
 
-exports.updateExchangeReportById = async (req, res) => {
+exports.updateExchangeReportById = async (req, res, next) => {
   try {
     const updates = Object.keys(req.body);
     const allowedUpdates = [
@@ -104,7 +104,7 @@ exports.updateExchangeReportById = async (req, res) => {
   }
 };
 
-exports.removeExchangeReportById = async (req, res) => {
+exports.removeExchangeReportById = async (req, res, next) => {
   try {
     const exchangeReport = await ExchangeReport.findByIdAndDelete(
       req.params.id
