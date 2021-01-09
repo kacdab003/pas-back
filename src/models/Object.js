@@ -22,11 +22,13 @@ const objectSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  U: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Module",
-    required: true,
-  },
+  U: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Module",
+      required: true,
+    },
+  ],
 });
 
 module.exports = mongoose.model("Object", objectSchema);
