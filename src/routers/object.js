@@ -9,14 +9,14 @@ const {
 const auth = require("../middleware/auth");
 const router = new express.Router();
 
-router.post("/objects", auth, postAddObject);
+router.post("/objects", postAddObject);
 
-router.get("/objects", auth, getAllObjects);
+router.get("/objects", getAllObjects);
 
-router.get("/objects/:id", auth, getObjectById);
+router.get("/objects/:id", getObjectById);
 
-router.patch("/objects/:id", auth, updateObjectById);
+router.patch("/objects/:id", updateObjectById);
 
-router.delete("/objects/:id", auth, removeObjectById);
+router.delete("/objects/:id", removeObjectById);
 
 module.exports = router;
