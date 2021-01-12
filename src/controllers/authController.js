@@ -3,6 +3,7 @@ const validateUpdates = require("../utils/validateUpdates");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const errorTypes = require("../config/errorTypes");
+const authConfig = require("../config/auth");
 
 exports.signUp = async (req, res, next) => {
   const { login, name, surname, position, password } = req.body;
@@ -14,9 +15,12 @@ exports.signUp = async (req, res, next) => {
   try {
     await user.save();
 
-    const userToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const userToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      authConfig
+    );
+
     return res.status(201).send({ token: userToken });
   } catch (error) {
     next(errorTypes.INVALID_REQUEST);
@@ -36,9 +40,11 @@ exports.login = async (req, res, next) => {
       throw new Error(errorTypes.INVALID_REQUEST);
     }
 
-    const token = jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.TOKEN_EXPIRES_IN,
-    });
+    const token = jwt.sign(
+      { userId: foundUser._id },
+      process.env.JWT_SECRET,
+      authConfig
+    );
     const userFullName = foundUser.name + " " + foundUser.surname;
     return res.status(200).send({
       token,

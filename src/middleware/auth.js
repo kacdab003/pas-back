@@ -2,13 +2,16 @@ const jwt = require("jsonwebtoken");
 const errorTypes = require("../config/errorTypes");
 module.exports = (req, res, next) => {
   try {
-    const token = req.get("Authorization")?.split(" ")?.[1];
+    const authHeader = req.get("Authorization");
+    const token = authHeader.split(" ")[1];
+
     if (!token) {
-      return res.status(401).send({ message: "Could not authenticate!" });
+      throw new Error("No auth token was provided");
     }
+
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     if (!decodedToken) {
-      return res.status(401).send({ message: "Could not authenticate!" });
+      throw new Error("Error when decodning token");
     }
     req.userId = decodedToken.userId;
     req.isAuthenticated = true;
