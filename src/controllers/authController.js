@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const errorTypes = require("../config/errorTypes");
 const authConfig = require("../config/auth");
 const { validationResult } = require("express-validator");
-
+const createError = require("../utils/createError");
 exports.signUp = async (req, res, next) => {
   try {
     const { login, name, surname, position, password } = req.body;
@@ -13,8 +13,9 @@ exports.signUp = async (req, res, next) => {
     const hashedPwd = await bcrypt.hash(password, 12);
     const userToCreate = { login, name, surname, position };
     const validationErrors = validationResult(req);
+
     if (!validationErrors.isEmpty()) {
-      return res.status(400).send({
+      throw createError(errorTypes.INVALID_REQUEST, {
         message: "Dane nie spełniają wymagań.",
         errors: validationErrors.array(),
       });
@@ -31,7 +32,7 @@ exports.signUp = async (req, res, next) => {
 
     return res.status(201).send({ token: userToken });
   } catch (error) {
-    next(errorTypes.INVALID_REQUEST);
+    next(error);
   }
 };
 
@@ -41,11 +42,17 @@ exports.login = async (req, res, next) => {
 
     const foundUser = await User.findOne({ login });
     if (!foundUser) {
-      throw new Error(errorTypes.INVALID_REQUEST);
+      throw createError(
+        errorTypes.INVALID_REQUEST,
+        "Nie znaleziono użytkownika"
+      );
     }
     const isPasswordValid = await bcrypt.compare(password, foundUser.password);
     if (!isPasswordValid) {
-      throw new Error(errorTypes.INVALID_REQUEST);
+      throw createError(
+        errorTypes.INVALID_REQUEST,
+        "Podane dane nie są prawidłowe."
+      );
     }
 
     const token = jwt.sign(
@@ -84,7 +91,10 @@ exports.updateUserById = async (req, res, next) => {
     const areUpdatesValid = validateUpdates(updates, allowedUpdates);
 
     if (!areUpdatesValid.isOperationValid) {
-      throw new Error(errorTypes.INVALID_REQUEST);
+      throw new Error(
+        errorTypes.INVALID_REQUEST,
+        "Aktualizacja przesłanych pól nie jest dozwolona"
+      );
     }
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -110,7 +120,7 @@ exports.removeUserById = async (req, res, next) => {
     }
 
     return res.status(200).send({
-      message: "Resource was deleted successfully",
+      message: "Usunięcie zakończone sukcesem",
       deletedUser: user,
     });
   } catch (error) {

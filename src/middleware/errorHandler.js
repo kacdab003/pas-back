@@ -12,10 +12,7 @@ const errorHandler = (error, req, res, next) => {
         .status(404)
         .send({ message: "Nie znaleziono żądanego zasobu" });
     case errorTypes.INVALID_REQUEST:
-      return res.status(400).send({
-        message:
-          "Nieprawidłowe żądanie, sprawdź wprowadzone dane i spróbuj ponownie",
-      });
+      return res.status(400).send({ details: error.details });
 
     default:
       return res.status(500).send({
