@@ -4,15 +4,23 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const errorTypes = require("../config/errorTypes");
 const authConfig = require("../config/auth");
+const { validationResult } = require("express-validator");
 
 exports.signUp = async (req, res, next) => {
-  const { login, name, surname, position, password } = req.body;
-
-  const hashedPwd = await bcrypt.hash(password, 12);
-  const userToCreate = { login, name, surname, position };
-  const user = new User({ ...userToCreate, password: hashedPwd });
-
   try {
+    const { login, name, surname, position, password } = req.body;
+
+    const hashedPwd = await bcrypt.hash(password, 12);
+    const userToCreate = { login, name, surname, position };
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      return res.status(400).send({
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
+    }
+    const user = new User({ ...userToCreate, password: hashedPwd });
+
     await user.save();
 
     const userToken = jwt.sign(
