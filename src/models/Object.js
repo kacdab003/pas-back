@@ -26,7 +26,7 @@ const objectSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Module",
-      required: true,
+      required: false,
     },
   ],
 });
