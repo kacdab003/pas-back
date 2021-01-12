@@ -1,4 +1,5 @@
 const express = require("express");
+const { body } = require("express-validator");
 const {
   postAddObject,
   getAllObjects,
@@ -9,13 +10,22 @@ const {
 const auth = require("../middleware/auth");
 const router = new express.Router();
 
-router.post("/objects", auth, postAddObject);
+const validators = [
+  body("name").isString(),
+  body("T1").notEmpty(),
+  body("T2").notEmpty(),
+  body("T3").notEmpty(),
+  body("C1").notEmpty(),
+  body("U").isArray(),
+];
+
+router.post("/objects", validators, postAddObject);
 
 router.get("/objects", auth, getAllObjects);
 
 router.get("/objects/:id", auth, getObjectById);
 
-router.patch("/objects/:id", auth, updateObjectById);
+router.patch("/objects/:id", validators, updateObjectById);
 
 router.delete("/objects/:id", auth, removeObjectById);
 

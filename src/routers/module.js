@@ -1,4 +1,5 @@
 const express = require("express");
+const { body } = require("express-validator");
 const {
   postAddModule,
   getAllModules,
@@ -9,13 +10,19 @@ const {
 const auth = require("../middleware/auth");
 const router = new express.Router();
 
-router.post("/modules", auth, postAddModule);
+const validators = [
+  body("moduleNumber").isLength({ min: 1, max: 999999 }),
+  body("type").matches(/\b(?:A|B)\b/),
+  body("state").matches(/\b(?:a|b|c)\b/),
+];
+
+router.post("/modules", validators, postAddModule);
 
 router.get("/modules", auth, getAllModules);
 
 router.get("/modules/:id", auth, getModuleById);
 
-router.patch("/modules/:id", auth, updateModuleById);
+router.patch("/modules/:id", validators, updateModuleById);
 
 router.delete("/modules/:id", auth, removeModuleById);
 
