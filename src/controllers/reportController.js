@@ -1,6 +1,9 @@
 const Report = require("../models/Report");
 const validateUpdates = require("../utils/validateUpdates");
 const errorTypes = require("../config/errorTypes");
+const { validationResult } = require("express-validator");
+const createError = require("../utils/createError");
+
 exports.postAddReport = async (req, res, next) => {
   const {
     nr,
@@ -67,13 +70,18 @@ exports.postAddReport = async (req, res, next) => {
   });
 
   try {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
+    }
+
     await report.save();
     res.status(201).send(report);
   } catch (error) {
-    res.status(400).send({
-      error: "Could not add requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
@@ -160,6 +168,14 @@ exports.updateReportById = async (req, res, next) => {
 
     if (!report) {
       throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
     }
 
     return res.status(200).send(report);
