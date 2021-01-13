@@ -37,7 +37,7 @@ exports.getAllExchangeReports = async (req, res, next) => {
     const exchangeReports = await ExchangeReport.find({})
       .populate("damagedModule")
       .populate("newModule")
-      .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
+      .populate("exchangeWorker", { fullName: 1, position: 1 })
       .exec();
 
     if (!exchangeReports) {
@@ -56,7 +56,7 @@ exports.getExchangeReportById = async (req, res, next) => {
     const exchangeReport = await ExchangeReport.findById(exchangeReportId)
       .populate("damagedModule")
       .populate("newModule")
-      .populate("exchangeWorker", { name: 1, surname: 1, position: 1 })
+      .populate("exchangeWorkers", { fullName: 1, position: 1 })
       .exec();
 
     if (!exchangeReport) {
