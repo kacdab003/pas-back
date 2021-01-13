@@ -1,19 +1,26 @@
 const Object = require("../models/Object");
 const validateUpdates = require("../utils/validateUpdates");
 const errorTypes = require("../config/errorTypes");
+const { validationResult } = require("express-validator");
+const createError = require("../utils/createError");
 
 exports.postAddObject = async (req, res, next) => {
   try {
     const { name, T1, T2, T3, C1, U } = req.body;
     const object = new Object({ name, T1, T2, T3, C1, U });
 
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
+    }
+
     await object.save();
     res.status(201).send(object);
   } catch (error) {
-    res.status(400).send({
-      error: "Could not add requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
@@ -62,6 +69,14 @@ exports.updateObjectById = async (req, res, next) => {
 
     if (!object) {
       throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
     }
 
     return res.status(200).send(object);

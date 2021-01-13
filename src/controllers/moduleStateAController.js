@@ -1,19 +1,26 @@
 const ModuleStateA = require("../models/ModuleStateA");
 const validateUpdates = require("../utils/validateUpdates");
 const errorTypes = require("../config/errorTypes");
+const { validationResult } = require("express-validator");
+const createError = require("../utils/createError");
 
 exports.postAddModuleStateA = async (req, res, next) => {
   try {
     const { module, accessDate } = req.body;
     const moduleStateA = new ModuleStateA({ module, accessDate });
 
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
+    }
+
     await moduleStateA.save();
     res.status(201).send(moduleStateA);
   } catch (error) {
-    res.status(400).send({
-      error: "Could not add requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
@@ -68,6 +75,14 @@ exports.updateModuleStateAById = async (req, res, next) => {
 
     if (!moduleStateA) {
       throw new Error(errorTypes.INVALID_REQUEST);
+    }
+
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
     }
 
     return res.status(200).send(moduleStateA);

@@ -1,6 +1,8 @@
 const ModuleStateC = require("../models/ModuleStateC");
 const validateUpdates = require("../utils/validateUpdates");
 const errorTypes = require("../config/errorTypes");
+const { validationResult } = require("express-validator");
+const createError = require("../utils/createError");
 
 exports.postAddModuleStateC = async (req, res, next) => {
   try {
@@ -12,13 +14,19 @@ exports.postAddModuleStateC = async (req, res, next) => {
       repairWorker,
       description,
     });
+
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
+    }
+
     await moduleStateC.save();
     res.status(201).send(moduleStateC);
   } catch (error) {
-    return res.status(400).send({
-      error: "Could not add requsted resource",
-      details: error.message,
-    });
+    next(error);
   }
 };
 
@@ -82,6 +90,14 @@ exports.updateModuleStateCById = async (req, res, next) => {
 
     if (!moduleStateC) {
       throw new Error(errorTypes.NOT_FOUND_ERROR);
+    }
+
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      throw createError(errorTypes.INVALID_REQUEST, {
+        message: "Dane nie spełniają wymagań.",
+        errors: validationErrors.array(),
+      });
     }
 
     return res.status(200).send(moduleStateC);
