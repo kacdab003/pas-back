@@ -11,7 +11,7 @@ exports.signUp = async (req, res, next) => {
     const { login, name, surname, position, password } = req.body;
 
     const hashedPwd = await bcrypt.hash(password, 12);
-    const userToCreate = { login, name, surname, position };
+    const userToCreate = { login, fullName: `${name} ${surname}`, position };
     const validationErrors = validationResult(req);
 
     if (!validationErrors.isEmpty()) {

@@ -7,25 +7,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  name: {
+  fullName: {
     type: String,
     required: true,
-    trim: true,
-    validate(value) {
-      if (!validator.isLength(value, { min: 1, max: 20 })) {
-        throw new Error("Name length out of bounds!");
-      }
-    },
-  },
-  surname: {
-    type: String,
-    required: true,
-    trim: true,
-    validate(value) {
-      if (!validator.isLength(value, { min: 1, max: 40 })) {
-        throw new Error("Surname length out of bounds!");
-      }
-    },
+    unique: false,
   },
   position: {
     type: String,
