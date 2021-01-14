@@ -16,7 +16,6 @@ const validators = [
   body("T2").notEmpty(),
   body("T3").notEmpty(),
   body("C1").notEmpty(),
-  body("U").isArray(),
 ];
 
 router.post("/objects", validators, postAddObject);
