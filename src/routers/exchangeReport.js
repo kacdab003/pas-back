@@ -11,7 +11,7 @@ const auth = require("../middleware/auth");
 const router = new express.Router();
 
 const validators = [
-  body("exchangeDate").isDate(),
+  body("exchangeDate").notEmpty(),
   body("objectNumber").isLength({ min: 1, max: 999999 }),
   body("socket").isLength({ min: 1, max: 999999 }),
   body("damagedModule").isMongoId(),
