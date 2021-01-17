@@ -12,11 +12,13 @@ const reportSchema = new mongoose.Schema(
         }
       },
     },
-    workers: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    }],
+    workers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+    ],
     configuration: {
       type: String,
       enum: ["1+2", "2+3", "1+3", "1+2+3"],
@@ -46,11 +48,58 @@ const reportSchema = new mongoose.Schema(
       },
     },
     rms: { type: String, enum: ["ZAŁ", "WYŁ"], required: true },
-    objects: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Object",
-      required: true,
-    },],
+    objects: [
+      {
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        T1: {
+          type: Number,
+          required: true,
+        },
+        T2: {
+          type: Number,
+          required: true,
+        },
+        T3: {
+          type: Number,
+          required: true,
+        },
+        C1: {
+          type: Number,
+          required: true,
+        },
+        U: [
+          {
+            moduleNumber: {
+              type: Number,
+              required: true,
+              validate(value) {
+                if (value < 0 || value > 999999) {
+                  throw new Error("Module Number out of bounds!");
+                }
+              },
+            },
+            socket: {
+              type: Number,
+              required: true,
+              validate(value) {
+                if (value < 0 || value > 999999) {
+                  throw new Error("Socket out of bounds!");
+                }
+              },
+            },
+            type: {
+              type: String,
+              enum: ["A", "B"],
+              required: true,
+            },
+          },
+        ],
+      },
+    ],
     pump: {
       type: String,
       enum: ["P1", "P2"],
@@ -74,7 +123,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (value < 0 || value > 100){
+        if (value < 0 || value > 100) {
           throw new Error("Degree of opening (A) out of bounds!");
         }
       },
@@ -122,7 +171,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (value < 0 || value > 10000){
+        if (value < 0 || value > 10000) {
           throw new Error("DAB_MER out of bounds!");
         }
       },
@@ -131,7 +180,7 @@ const reportSchema = new mongoose.Schema(
       type: Number,
       required: true,
       validate(value) {
-        if (value < 0 || value > 10000){
+        if (value < 0 || value > 10000) {
           throw new Error("DAB_SHOULDER_UP out of bounds!");
         }
       },

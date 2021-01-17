@@ -14,6 +14,7 @@ exports.postAddReport = async (req, res, next) => {
     module,
     rms,
     pump,
+    objects,
     pressure,
     temperatureIn,
     temperatureOut,
@@ -46,6 +47,7 @@ exports.postAddReport = async (req, res, next) => {
     module,
     rms,
     pump,
+    objects,
     pressure,
     temperatureIn,
     temperatureOut,
@@ -89,7 +91,6 @@ exports.getAllReports = async (req, res, next) => {
   try {
     const reports = await Report.find({})
       .populate("workers", { fullName: 1, position: 1 })
-      .populate("objects")
       .exec();
 
     if (!reports) {
@@ -107,7 +108,6 @@ exports.getReportById = async (req, res, next) => {
     const reportId = req.params.id;
     const report = await Report.findById(reportId)
       .populate("workers", { fullName: 1, position: 1 })
-      .populate("objects")
       .exec();
 
     if (!report) {
@@ -130,6 +130,7 @@ exports.updateReportById = async (req, res, next) => {
     "mod_set",
     "module",
     "rms",
+    "objects",
     "reports",
     "pump",
     "pressure",
