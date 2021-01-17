@@ -73,6 +73,7 @@ const reportSchema = new mongoose.Schema(
         },
         U: [
           {
+            required: false,
             moduleNumber: {
               type: Number,
               required: true,

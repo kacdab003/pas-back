@@ -14,8 +14,8 @@ const validators = [
   body("exchangeDate").notEmpty(),
   body("objectNumber").isLength({ min: 1, max: 999999 }),
   body("socket").isLength({ min: 1, max: 999999 }),
-  body("damagedModule").isMongoId(),
-  body("newModule").isMongoId(),
+  body("damagedModuleNumber").isLength({ min: 1, max: 999999 }),
+  body("newModuleNumber").isLength({ min: 1, max: 999999 }),
   body("exchangeWorker").isMongoId(),
 ];
 
