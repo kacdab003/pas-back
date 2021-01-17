@@ -23,15 +23,23 @@ const exchangeReportSchema = new mongoose.Schema({
       }
     },
   },
-  damagedModule: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Module",
+  damagedModuleNumber: {
+    type: Number,
     required: true,
+    validate(value) {
+      if (value < 0 || value > 999999) {
+        throw new Error("Module Number out of bounds!");
+      }
+    },
   },
-  newModule: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Module",
+  newModuleNumber: {
+    type: Number,
     required: true,
+    validate(value) {
+      if (value < 0 || value > 999999) {
+        throw new Error("Module Number out of bounds!");
+      }
+    },
   },
   exchangeWorker: {
     type: mongoose.Schema.Types.ObjectId,

@@ -9,8 +9,8 @@ exports.postAddExchangeReport = async (req, res, next) => {
     exchangeDate,
     objectNumber,
     socket,
-    damagedModule,
-    newModule,
+    damagedModuleNumber,
+    newModuleNumber,
     exchangeWorker,
   } = req.body;
 
@@ -18,8 +18,8 @@ exports.postAddExchangeReport = async (req, res, next) => {
     exchangeDate,
     objectNumber,
     socket,
-    damagedModule,
-    newModule,
+    damagedModuleNumber,
+    newModuleNumber,
     exchangeWorker,
   });
 
@@ -42,8 +42,6 @@ exports.postAddExchangeReport = async (req, res, next) => {
 exports.getAllExchangeReports = async (req, res, next) => {
   try {
     const exchangeReports = await ExchangeReport.find({})
-      .populate("damagedModule")
-      .populate("newModule")
       .populate("exchangeWorker", { fullName: 1, position: 1 })
       .exec();
 
@@ -61,8 +59,6 @@ exports.getExchangeReportById = async (req, res, next) => {
   try {
     const exchangeReportId = req.params.id;
     const exchangeReport = await ExchangeReport.findById(exchangeReportId)
-      .populate("damagedModule")
-      .populate("newModule")
       .populate("exchangeWorkers", { fullName: 1, position: 1 })
       .exec();
 
@@ -83,8 +79,8 @@ exports.updateExchangeReportById = async (req, res, next) => {
       "exchangeDate",
       "objectNumber",
       "socket",
-      "damagedModule",
-      "newModule",
+      "damagedModuleNumber",
+      "newModuleNumber",
       "exchangeWorker",
     ];
     const areUpdatesValid = validateUpdates(updates, allowedUpdates);

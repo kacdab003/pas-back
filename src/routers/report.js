@@ -13,11 +13,11 @@ const router = new express.Router();
 const validators = [
   body("nr").isLength({ min: 1, max: 50 }),
   body("workers").isArray(),
-  body("configuration").matches(/\b(?:1+2|2+3|1+3|1+2+3)\b/),
+  body("configuration").matches(/\b(?:1\+2|2\+3|1\+3|1\+2\+3)\b/),
   body("pwr_set").isLength({ min: 1, max: 100 }),
   body("mod_set").notEmpty(),
   body("module").isLength({ min: 1, max: 4 }),
-  body("rms").matches(/\b(?:ZAŁ|WYŁ)\b/),
+  body("rms").matches(/\b(?:ZAL|WYL)\b/),
   body("objects").isArray(),
   body("pump").matches(/\b(?:P1|P2)\b/),
   body("pressure").isLength({ min: 1, max: 999999 }),
