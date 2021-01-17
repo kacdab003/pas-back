@@ -47,7 +47,7 @@ const reportSchema = new mongoose.Schema(
         }
       },
     },
-    rms: { type: String, enum: ["ZAŁ", "WYŁ"], required: true },
+    rms: { type: String, enum: ["ZAL", "WYL"], required: true },
     objects: [
       {
         name: {
