@@ -4,10 +4,11 @@ const validator = require("validator");
 const reportSchema = new mongoose.Schema(
   {
     nr: {
-      type: Number,
+      type: String,
       required: true,
+      trim: true,
       validate(value) {
-        if (value < 1 || value > 50) {
+        if (!validator.isLength(value, { min: 1, max: 50 })) {
           throw new Error("Report number length out of bounds!");
         }
       },
